@@ -18,6 +18,7 @@ public:
 
 private:
 	static void hitStopBehaviorOp(RE::BSFixedString animVariable, long stopTimeMiliSec, float stopSpeed);
+	static void hitStopAnimSpeedOp(long stopTimeMiliSec, float stopSpeed);
 };
 	
 

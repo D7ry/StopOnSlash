@@ -30,6 +30,7 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 		DEBUG("Target Actor Not Found!");
 		return;
 	}
+	bool isPower = a_event->flags.any(RE::TESHitEvent::Flag::kPowerAttack);
 
 	if (isObject(target)) {
 		if (!dataHandler::stopOnObject) {
@@ -37,7 +38,7 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 			return;
 		}
 		DEBUG("stop on object");
-		stopHandler::objectStop();
+		stopHandler::objectStop(isPower);
 		return;
 	}
 
@@ -55,7 +56,7 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 			return;
 		}
 		DEBUG("stop on dead");
-		stopHandler::creatureStop();
+		stopHandler::creatureStop(isPower);
 		return;
 	}
 
@@ -66,7 +67,7 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 			return;
 		}
 		DEBUG("stop on bash");
-		stopHandler::bashStop();
+		stopHandler::bashStop(isPower);
 		return;
 	}
 
@@ -76,12 +77,12 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 			return;
 		}
 		DEBUG("stop on blocked");
-		stopHandler::blockedStop();
+		stopHandler::blockedStop(isPower);
 		return;
 	}
 
 	//iff all above are checked, it can only be a living creature.
-	stopHandler::creatureStop();
+	stopHandler::creatureStop(isPower);
 }
 
 

@@ -10,9 +10,10 @@ public:
 
 	enum combatFrameWork
 	{
-		SkySa = 0,
-		ABR = 1,
-		MCO = 2
+		Vanilla = 0,
+		SkySa = 1,
+		ABR = 2,
+		MCO = 3
 	};
 
 	static combatFrameWork currFrameWork;
