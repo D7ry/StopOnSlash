@@ -1,6 +1,7 @@
 #pragma once
 #include "onHitEventHandler.h"
 #include "dataHandler.h"
+#include "Papyrus.h"
 class loadGame
 {
 public:
@@ -11,6 +12,7 @@ public:
 			INFO("data loaded, initializing...");
 			onHitEventHandler::Register();
 			dataHandler::GetSingleton()->readSettings();
+			Papyrus::Register();
 			INFO("initialization complete!");
 		}
 	}
