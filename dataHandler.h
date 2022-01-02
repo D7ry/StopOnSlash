@@ -7,6 +7,10 @@
 class dataHandler
 {
 public:
+	static dataHandler* GetSingleton() {
+		static dataHandler singleton;
+		return std::addressof(singleton);
+	}
 
 	enum combatFrameWork
 	{
@@ -16,19 +20,19 @@ public:
 		MCO = 3
 	};
 
-	static combatFrameWork currFrameWork;
+	combatFrameWork currFrameWork;
 
-	static void readSettings();
+	void readSettings();
 
-	static bool stopOnCreature;
+	bool stopOnCreature;
 
-	static bool stopOnObject;
+	bool stopOnObject;
 
-	static bool stopOnDead;
+	bool stopOnDead;
 
-	static bool stopOnBash;
+	bool stopOnBash;
 
-	static bool stopOnBlocked;
+	bool stopOnBlocked;
 
 };
 

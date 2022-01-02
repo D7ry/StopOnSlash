@@ -3,12 +3,11 @@
 
 namespace Utils
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-
+	/*
 	void SGTM(float a_out) {
 		static float* g_SGTM = (float*)REL::ID(511883).address();
 		*g_SGTM = a_out;
-	}
+	}*/
 }
 
 class hitStop

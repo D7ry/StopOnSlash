@@ -10,7 +10,7 @@ public:
 		if (msg->type == SKSE::MessagingInterface::kDataLoaded) {
 			INFO("data loaded, initializing...");
 			onHitEventHandler::Register();
-			dataHandler::readSettings();
+			dataHandler::GetSingleton()->readSettings();
 			INFO("initialization complete!");
 		}
 	}
