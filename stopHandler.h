@@ -35,10 +35,10 @@ namespace stopTimeMs
 
 namespace stopSpeed 
 {
-	inline static float objectStopSpeed;
-	inline static float bashStopSpeed;
-	inline static float blockedStopSpeed;
-	inline static float creatureStopSpeed;
+	inline static float objectStopSpeedPercent;
+	inline static float bashStopSpeedPercent;
+	inline static float blockedStopSpeedPercent;
+	inline static float creatureStopSpeedPercent;
 
 	inline static float stopSpeedPowerMult;
 

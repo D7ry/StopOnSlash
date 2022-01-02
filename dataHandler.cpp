@@ -6,12 +6,12 @@ void dataHandler::readSettings() {
 	#define SETTINGFILE_PATH "Data\\SKSE\\Plugins\\dTryHitStop.ini"
 	ini.LoadFile(SETTINGFILE_PATH);
 
-	int frameworkInt = (int)ini.GetValue("General", "FrameWork", "0");
+	int frameworkInt = (int)ini.GetLongValue("General", "FrameWork", 0);
 	switch (frameworkInt) {
-	case 0: currFrameWork = combatFrameWork::Vanilla; break;
-	case 1: currFrameWork = combatFrameWork::SkySa; break;
-	case 2: currFrameWork = combatFrameWork::ABR; break;
-	case 3: currFrameWork = combatFrameWork::MCO; break;
+	case 0: currFrameWork = combatFrameWork::Vanilla; DEBUG("using vanilla framework!"); break;
+	case 1: currFrameWork = combatFrameWork::SkySa; DEBUG("using Skysa framework!"); break;
+	case 2: currFrameWork = combatFrameWork::ABR; DEBUG("using ABR framework!"); break;
+	case 3: currFrameWork = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
 	default: currFrameWork = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
 	}
 

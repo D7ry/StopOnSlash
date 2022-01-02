@@ -13,11 +13,13 @@ namespace Utils
 class hitStop
 {
 public:
-	static void stop(long stopTimeMiliSec, float stopSpeed);
+	static void stop(long stopTimeMiliSec, long stopSpeed);
 
 private:
+	static void stopVanilla(long stopTimeMiliSec, long stopSpeed);
+	static void stopMCO(long stopTimeMiliSec, long stopSpeed);
 	static void hitStopBehaviorOp(RE::BSFixedString animVariable, long stopTimeMiliSec, float stopSpeed);
-	static void hitStopAnimSpeedOp(long stopTimeMiliSec, float stopSpeed);
+	static void hitStopSGTMOp(long stopTimeMiliSec, long stopSpeed);
 };
 	
 

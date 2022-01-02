@@ -25,22 +25,19 @@ RE::WEAPON_TYPE getPcWpnEnum() {
 
 
 void stopHandler::objectStop(bool isPowerAtk) {
-	DEBUG("initializing object stop");
-	DEBUG("objectStopTime is {}, objectStopSpeed is {}, multiplier are {} and {}", stopTimeMs::objectStopTime, stopSpeed::objectStopSpeed, getTimeMult(), getSpeedMult());
-	DEBUG("stop time: {}, stop speed: {}", stopTimeMs::objectStopTime * getTimeMult(), stopSpeed::objectStopSpeed * getSpeedMult());
-	powerMult(stopTimeMs::objectStopTime * getTimeMult(), stopSpeed::objectStopSpeed * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::objectStopTime * getTimeMult(), stopSpeed::objectStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::bashStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::bashStopTime * getTimeMult(), stopSpeed::bashStopSpeed * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::bashStopTime * getTimeMult(), stopSpeed::bashStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::blockedStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::blockedStopTime * getTimeMult(), stopSpeed::blockedStopSpeed * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::blockedStopTime * getTimeMult(), stopSpeed::blockedStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::creatureStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::creatureStopTime * getTimeMult(), stopSpeed::creatureStopSpeed * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::creatureStopTime * getTimeMult(), stopSpeed::creatureStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::powerMult(float stopTime, float stopSpeed, float isPower) {
@@ -107,12 +104,11 @@ void stopHandler::refreshVal() {
 	stopTimeMaceMult = ini.GetDoubleValue("Multiplier", "stopTimeMaceMult", 1);
 
 	using namespace stopSpeed;
-	bashStopSpeed = ini.GetDoubleValue("StopOnBash", "StopSpeed", 1);
-	objectStopSpeed = ini.GetDoubleValue("StopOnObject", "StopSpeed", 1);
-	DEBUG("reading from ini, obejct stop speed is supposed to be {}", ini.GetDoubleValue("StopOnObject", "StopSpeed", 0));
-	DEBUG("object actual stop speed is {}", objectStopSpeed);
-	blockedStopSpeed = ini.GetDoubleValue("StopOnBlocked", "StopSpeed", 1);
-	creatureStopSpeed = ini.GetDoubleValue("StopOnCreature", "StopSpeed", 1);
+	bashStopSpeedPercent = ini.GetDoubleValue("StopOnBash", "StopSpeedPercent", 100);
+	objectStopSpeedPercent = ini.GetDoubleValue("StopOnObject", "StopSpeedPercent", 100);
+	DEBUG("reading from ini, obejct stop speed is set to be {}", ini.GetDoubleValue("StopOnObject", "StopSpeedPercent", 100));
+	blockedStopSpeedPercent = ini.GetDoubleValue("StopOnBlocked", "StopSpeedPercent", 100);
+	creatureStopSpeedPercent = ini.GetDoubleValue("StopOnCreature", "StopSpeedPercent", 100);
 
 	stopSpeedPowerMult = ini.GetDoubleValue("Multiplier", "stopSpeedPowerMult", 1);
 
