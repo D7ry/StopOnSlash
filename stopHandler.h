@@ -9,7 +9,7 @@ public:
 	static void creatureStop(bool isPowerAtk);
 	
 private:
-	static void powerMult(float stopTime, float stopSpeed, float isPower);
+	static void powerMult(int stopTime, float stopSpeed, bool isPower);
 	static float getTimeMult();
 	static float getSpeedMult();
 };

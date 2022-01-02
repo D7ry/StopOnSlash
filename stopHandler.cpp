@@ -40,7 +40,7 @@ void stopHandler::creatureStop(bool isPowerAtk) {
 	powerMult(stopTimeMs::creatureStopTime * getTimeMult(), stopSpeed::creatureStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
-void stopHandler::powerMult(float stopTime, float stopSpeed, float isPower) {
+void stopHandler::powerMult(int stopTime, float stopSpeed, bool isPower) {
 	if (isPower) {
 		hitStop::stop(stopTime * stopTimeMs::stopTimePowerMult, stopSpeed * stopSpeed::stopSpeedPowerMult);
 	}
@@ -57,6 +57,7 @@ float stopHandler::getSpeedMult() {
 	switch (getPcWpnEnum())
 	{
 	case weapon::kHandToHandMelee: return stopSpeedHandToHandMult; break;
+	case weapon::kOneHandDagger: return stopSpeedDaggerMult; break;
 	case weapon::kOneHandSword: return stopSpeedSwordMult; break;
 	case weapon::kOneHandMace: return stopSpeedMaceMult; break;
 	case weapon::kOneHandAxe: return stopSpeedAxeMult; break;
@@ -72,6 +73,7 @@ float stopHandler::getTimeMult() {
 	switch (getPcWpnEnum())
 	{
 	case weapon::kHandToHandMelee: return stopTimeHandToHandMult; break;
+	case weapon::kOneHandDagger: return stopTimeDaggerMult; break;
 	case weapon::kOneHandSword: return stopTimeSwordMult; break;
 	case weapon::kOneHandMace: return stopTimeMaceMult; break;
 	case weapon::kOneHandAxe: return stopTimeAxeMult; break;
@@ -100,8 +102,8 @@ void stopHandler::refreshVal() {
 	stopTimeSwordMult = ini.GetDoubleValue("Multiplier", "stopTimeSwordMult", 1);
 	stopTimeGreatSwordMult = ini.GetDoubleValue("Multiplier", "stopTimeGreatSwordMult", 1);
 	stopTimeAxeMult = ini.GetDoubleValue("Multiplier", "stopTimeAxeMult", 1);
-	stopTime2hwMult = ini.GetDoubleValue("Multiplier", "stopTime2hwMult", 1);
 	stopTimeMaceMult = ini.GetDoubleValue("Multiplier", "stopTimeMaceMult", 1);
+	stopTime2hwMult = ini.GetDoubleValue("Multiplier", "stopTime2hwMult", 1);
 
 	using namespace stopSpeed;
 	bashStopSpeedPercent = ini.GetDoubleValue("StopOnBash", "StopSpeedPercent", 100);
@@ -117,6 +119,6 @@ void stopHandler::refreshVal() {
 	stopSpeedSwordMult = ini.GetDoubleValue("Multiplier", "stopSpeedSwordMult", 1);
 	stopSpeedGreatSwordMult = ini.GetDoubleValue("Multiplier", "stopSpeedGreatSwordMult", 1);
 	stopSpeedAxeMult = ini.GetDoubleValue("Multiplier", "stopSpeedAxeMult", 1);
-	stopSpeed2hwMult = ini.GetDoubleValue("Multiplier", "stopSpeed2hwMult", 1);
 	stopSpeedMaceMult = ini.GetDoubleValue("Multiplier", "stopSpeedMaceMult", 1);
+	stopSpeed2hwMult = ini.GetDoubleValue("Multiplier", "stopSpeed2hwMult", 1);
 }

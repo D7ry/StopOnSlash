@@ -9,9 +9,9 @@ void dataHandler::readSettings() {
 	int frameworkInt = (int)ini.GetLongValue("General", "FrameWork", 0);
 	switch (frameworkInt) {
 	case 0: currFrameWork = combatFrameWork::Vanilla; DEBUG("using vanilla framework!"); break;
-	case 1: currFrameWork = combatFrameWork::SkySa; DEBUG("using Skysa framework!"); break;
-	case 2: currFrameWork = combatFrameWork::ABR; DEBUG("using ABR framework!"); break;
-	case 3: currFrameWork = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
+	case 1: currFrameWork = combatFrameWork::ASF; DEBUG("using ASF framework!"); break;
+	case 2: currFrameWork = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
+	case 3: currFrameWork = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
 	default: currFrameWork = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
 	}
 

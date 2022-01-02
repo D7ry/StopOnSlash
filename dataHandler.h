@@ -15,9 +15,9 @@ public:
 	enum combatFrameWork
 	{
 		Vanilla = 0,
-		SkySa = 1,
-		ABR = 2,
-		MCO = 3
+		ASF = 1,
+		MCO = 2,
+		STGM = 3
 	};
 
 	combatFrameWork currFrameWork;

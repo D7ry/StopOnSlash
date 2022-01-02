@@ -13,13 +13,19 @@ namespace Utils
 class hitStop
 {
 public:
-	static void stop(long stopTimeMiliSec, long stopSpeed);
+	static void stop(int stopTimeMiliSec, float stopSpeed);
 
 private:
-	static void stopVanilla(long stopTimeMiliSec, long stopSpeed);
-	static void stopMCO(long stopTimeMiliSec, long stopSpeed);
-	static void hitStopBehaviorOp(RE::BSFixedString animVariable, long stopTimeMiliSec, float stopSpeed);
-	static void hitStopSGTMOp(long stopTimeMiliSec, long stopSpeed);
+	static void stopVanilla(int stopTimeMiliSec, float stopSpeed);
+	static void stopSGTM(int stopTimeMiliSec, float stopSpeed);
+	static void stopMCO(int stopTimeMiliSec, float stopSpeed);
+	static void stopASF(int stopTimeMiliSec, float stopSpeed);
+
+
+	static void hitStopBehaviorOp(RE::BSFixedString animVariable, int stopTimeMiliSec, float stopSpeed);
+	static void hitStopSGTMOp(int stopTimeMiliSec, float stopSpeed);
+	static void hitStopVanillaOp(int stopTimeMiliSec, float stopSpeed);
+	static void hitStopASFOp(int stopTimeMiliSec, float stopSpeed);
 };
 	
 
