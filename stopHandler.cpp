@@ -13,14 +13,16 @@ RE::WEAPON_TYPE getPcWpnEnum() {
 	auto wpnR = pc->GetEquippedObject(false);
 	auto wpnL = pc->GetEquippedObject(true);
 	if (wpnR && wpnR->IsWeapon()) {
-		return wpnR->As<RE::TESObjectWEAP>()->GetWeaponType();
+		RE::WEAPON_TYPE Rtype = wpnR->As<RE::TESObjectWEAP>()->GetWeaponType();
+		if (Rtype != RE::WEAPON_TYPE::kHandToHandMelee) {
+			return Rtype;
+		}
 	}
-	else if (wpnL && wpnL->IsWeapon()) {
+	if (wpnL && wpnL->IsWeapon()) {
 		return wpnL->As<RE::TESObjectWEAP>()->GetWeaponType();
 	}
-	else {
-		return RE::WEAPON_TYPE::kHandToHandMelee;
-	}
+	DEBUG("player not holding any weapon, using H2H multiplier!");
+	return RE::WEAPON_TYPE::kHandToHandMelee;
 }
 
 
