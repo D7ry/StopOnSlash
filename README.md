@@ -1,2 +1,3 @@
 # HitStop
- simple hitstop mod
+Hitstop mod for Skyrim featuring compatibility and customization
+
