@@ -24,6 +24,7 @@ void hitStop::hitStopBehaviorOp(RE::BSFixedString animVariable, int stopTimeMili
 }
 
 void hitStop::hitStopSGTMOp(int stopTimeMiliSec, float stopSpeed) {
+	DEBUG("executing stop! by speed {}", stopSpeed);
 	SGTM(stopSpeed);
 	std::this_thread::sleep_for(std::chrono::milliseconds(stopTimeMiliSec));
 	SGTM(1);
@@ -86,6 +87,7 @@ void hitStop::stopSGTM(int stopTimeMiliSec, float stopSpeed) {
 
 /*call this to start a new hitstop*/
 void hitStop::stop(int stopTimeMiliSec, float stopSpeed) {
+	DEBUG("finalizing hitstop. stop time: {}, stop speed: {}", stopTimeMiliSec, stopSpeed);
 	using method = dataHandler::combatFrameWork;
 	switch (dataHandler::GetSingleton()->currFrameWork) {
 	case method::MCO: stopMCO(stopTimeMiliSec, stopSpeed); break;

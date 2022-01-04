@@ -24,16 +24,19 @@ public:
 
 	void readSettings();
 
-	bool stopOnCreature;
+	bool stopOnCreature = true;
 
-	bool stopOnObject;
+	bool stopOnObject = true;
 
-	bool stopOnDead;
+	bool stopOnDead = true;
 
-	bool stopOnBash;
+	bool stopOnBash = true;
 
-	bool stopOnBlocked;
+	bool stopOnBlocked = true;
 
+private:
+	void ReadBoolSetting(CSimpleIniA& a_ini, const char* a_sectionName, const char* a_settingName, bool& a_setting);
+	void ReadIntSetting(CSimpleIniA& a_ini, const char* a_sectionName, const char* a_settingName, int& a_setting);
 };
 
 

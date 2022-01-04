@@ -5,23 +5,23 @@
 
 namespace Papyrus
 {
-	void hitStopRedux_MCM::OnConfigClose(RE::TESQuest*)
+	void StopOnSlash_MCM::OnConfigClose(RE::TESQuest*)
 	{
 		dataHandler::GetSingleton()->readSettings();
 	}
 
-	bool hitStopRedux_MCM::Register(RE::BSScript::IVirtualMachine* a_vm)
+	bool StopOnSlash_MCM::Register(RE::BSScript::IVirtualMachine* a_vm)
 	{
-		a_vm->RegisterFunction("OnConfigClose", "hitStopRedux_MCM", OnConfigClose);
+		a_vm->RegisterFunction("OnConfigClose", "StopOnSlash_MCM", OnConfigClose);
 
-		INFO("Registered hitStopRedux MCM class");
+		INFO("Registered SOS MCM class");
 		return true;
 	}
 
 	void Register()
 	{
 		auto papyrus = SKSE::GetPapyrusInterface();
-		papyrus->Register(hitStopRedux_MCM::Register);
+		papyrus->Register(StopOnSlash_MCM::Register);
 		INFO("Registered papyrus functions");
 	}
 }

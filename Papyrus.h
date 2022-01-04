@@ -1,7 +1,7 @@
 #pragma once
 namespace Papyrus
 {
-	class hitStopRedux_MCM
+	class StopOnSlash_MCM
 	{
 	public:
 		static void OnConfigClose(RE::TESQuest*);

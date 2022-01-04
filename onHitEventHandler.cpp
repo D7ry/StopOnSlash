@@ -30,8 +30,17 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 		DEBUG("Target Actor Not Found!");
 		return;
 	}
+
 	bool isPower = a_event->flags.any(RE::TESHitEvent::Flag::kPowerAttack);
 
+	if (!isPower) {
+		auto pc = RE::PlayerCharacter::GetSingleton();
+		if (pc && pc->currentProcess && pc->currentProcess->high && pc->currentProcess->high->attackData && pc->currentProcess->high->attackData->data.flags.any(RE::AttackData::AttackFlag::kPowerAttack)) {
+			isPower = true;
+		}
+	}
+
+	//iff target is object
 	if (isObject(target)) {
 		if (!dataHandler::GetSingleton()->stopOnObject) {
 			DEBUG("object, no hit stop!");
@@ -42,31 +51,30 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 		return;
 	}
 
-	//stop on alive target.
+
+	//target now has to be a creature.
 	if (!dataHandler::GetSingleton()->stopOnCreature) {
 		DEBUG("hit creature, no hitstop!");
 		return;
 	}
 
-	//if not actor, shorcircuits here.
 	auto targetActor = target->As<RE::Actor>();
 	if (!isAlive(targetActor)) {
 		if (!dataHandler::GetSingleton()->stopOnDead) {
 			DEBUG("dead actor, no hit stop!");
 			return;
 		}
-		DEBUG("stop on dead");
+		DEBUG("stop on dead creature!");
 		stopHandler::creatureStop(isPower);
 		return;
 	}
-
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
 		if (!dataHandler::GetSingleton()->stopOnBash) {
 			DEBUG("bash hit, no hit stop!");
 			return;
 		}
-		DEBUG("stop on bash");
+		DEBUG("stop on bash!");
 		stopHandler::bashStop(isPower);
 		return;
 	}
@@ -76,13 +84,14 @@ void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
 			DEBUG("hit blocked, no hit stop!");
 			return;
 		}
-		DEBUG("stop on blocked");
+		DEBUG("stop on blocked attack!");
 		stopHandler::blockedStop(isPower);
 		return;
 	}
 
+
 	//iff all above are checked, it can only be a living creature.
-	DEBUG("stop on creature");
+	DEBUG("stop on creature!");
 	stopHandler::creatureStop(isPower);
 }
 

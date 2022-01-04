@@ -25,24 +25,26 @@ RE::WEAPON_TYPE getPcWpnEnum() {
 
 
 void stopHandler::objectStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::objectStopTime * getTimeMult(), stopSpeed::objectStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::objectStopTime * getTimeMult() / 100, stopSpeed::objectStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
 }
 
 void stopHandler::bashStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::bashStopTime * getTimeMult(), stopSpeed::bashStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::bashStopTime * getTimeMult() / 100, stopSpeed::bashStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
 }
 
 void stopHandler::blockedStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::blockedStopTime * getTimeMult(), stopSpeed::blockedStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::blockedStopTime * getTimeMult() / 100, stopSpeed::blockedStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
 }
 
 void stopHandler::creatureStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::creatureStopTime * getTimeMult(), stopSpeed::creatureStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	powerMult(stopTimeMs::creatureStopTime * getTimeMult() / 100, stopSpeed::creatureStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
 }
 
-void stopHandler::powerMult(int stopTime, float stopSpeed, bool isPower) {
+void stopHandler::powerMult(float stopTime, float stopSpeed, bool isPower) {
 	if (isPower) {
-		hitStop::stop(stopTime * stopTimeMs::stopTimePowerMult, stopSpeed * stopSpeed::stopSpeedPowerMult);
+		DEBUG("applying power offset!");
+		DEBUG("stop time is multiplied by {}, and stop speed is multiplied by {}", stopTimeMs::stopTimePowerMult / 100, stopSpeed::stopSpeedPowerMult / 100);
+		hitStop::stop(stopTime * stopTimeMs::stopTimePowerMult / 100, stopSpeed * stopSpeed::stopSpeedPowerMult / 100);
 	}
 	else {
 		hitStop::stop(stopTime, stopSpeed);
@@ -83,42 +85,52 @@ float stopHandler::getTimeMult() {
 	}
 }
 
+
+static inline void ReadFloatSetting(CSimpleIniA& a_ini, const char* a_sectionName, const char* a_settingName, float& a_setting)
+{
+	DEBUG("reading float setting!");
+	const char* bFound = nullptr;
+	bFound = a_ini.GetValue(a_sectionName, a_settingName);
+	if (bFound) {
+		DEBUG("found {} with value {}", a_sectionName, bFound);
+		a_setting = static_cast<float>(a_ini.GetDoubleValue(a_sectionName, a_settingName));
+	}
+}
+
 void stopHandler::refreshVal() {
 	CSimpleIniA ini;
-	#define SETTINGFILE_PATH "Data\\SKSE\\Plugins\\dTryHitStop.ini"
+	#define SETTINGFILE_PATH "Data\\MCM\\Settings\\StopOnSlash.ini"
 	ini.LoadFile(SETTINGFILE_PATH);
 	using namespace stopTimeMs;
-	bashStopTime = ini.GetDoubleValue("StopOnBash", "StopTimeMs", 0);
-	objectStopTime = ini.GetDoubleValue("StopOnObject", "StopTimeMs", 0);
-	DEBUG("reading from ini, obejct stop time is supposed to be {}", ini.GetDoubleValue("StopOnObject", "StopTimeMs", 0));
-	DEBUG("object actual stop time is {}", objectStopTime);
-	blockedStopTime = ini.GetDoubleValue("StopOnBlocked", "StopTimeMs", 0);
-	creatureStopTime = ini.GetDoubleValue("StopOnCreature", "StopTimeMs", 0);
+	ReadFloatSetting(ini, "StopTime", "fstopOnBashMs", bashStopTime);
+	ReadFloatSetting(ini, "StopTime", "fstopOnObjectMs", objectStopTime);
+	ReadFloatSetting(ini, "StopTime", "fstopOnBlockedMs", blockedStopTime);
+	ReadFloatSetting(ini, "StopTime", "fstopOnCreatureMs", creatureStopTime);
 
-	stopTimePowerMult = ini.GetDoubleValue("Multiplier", "stopTimePowerMult", 1);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimePowerMult", stopTimePowerMult);
 
-	stopTimeHandToHandMult = ini.GetDoubleValue("Multiplier", "stopTimeHandToHandMult", 1);
-	stopTimeDaggerMult = ini.GetDoubleValue("Multiplier", "stopTimeDaggerMult", 1);
-	stopTimeSwordMult = ini.GetDoubleValue("Multiplier", "stopTimeSwordMult", 1);
-	stopTimeGreatSwordMult = ini.GetDoubleValue("Multiplier", "stopTimeGreatSwordMult", 1);
-	stopTimeAxeMult = ini.GetDoubleValue("Multiplier", "stopTimeAxeMult", 1);
-	stopTimeMaceMult = ini.GetDoubleValue("Multiplier", "stopTimeMaceMult", 1);
-	stopTime2hwMult = ini.GetDoubleValue("Multiplier", "stopTime2hwMult", 1);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimeHandToHandMult", stopTimeHandToHandMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimeDaggerMult", stopTimeDaggerMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimeSwordMult", stopTimeSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimeGreatSwordMult", stopTimeGreatSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimeAxeMult", stopTimeAxeMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopTimeMaceMult", stopTimeMaceMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopTime2hwMult", stopTime2hwMult);
+
 
 	using namespace stopSpeed;
-	bashStopSpeedPercent = ini.GetDoubleValue("StopOnBash", "StopSpeedPercent", 100);
-	objectStopSpeedPercent = ini.GetDoubleValue("StopOnObject", "StopSpeedPercent", 100);
-	DEBUG("reading from ini, obejct stop speed is set to be {}", ini.GetDoubleValue("StopOnObject", "StopSpeedPercent", 100));
-	blockedStopSpeedPercent = ini.GetDoubleValue("StopOnBlocked", "StopSpeedPercent", 100);
-	creatureStopSpeedPercent = ini.GetDoubleValue("StopOnCreature", "StopSpeedPercent", 100);
+	ReadFloatSetting(ini, "StopSpeed", "fstopOnBashSpd", bashStopSpeedPercent);
+	ReadFloatSetting(ini, "StopSpeed", "fstopOnObjectSpd", objectStopSpeedPercent);
+	ReadFloatSetting(ini, "StopSpeed", "fstopOnBlockedSpd", blockedStopSpeedPercent);
+	ReadFloatSetting(ini, "StopSpeed", "fstopOnCreatureSpd", creatureStopSpeedPercent);
 
-	stopSpeedPowerMult = ini.GetDoubleValue("Multiplier", "stopSpeedPowerMult", 1);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedPowerMult", stopSpeedPowerMult);
 
-	stopSpeedHandToHandMult = ini.GetDoubleValue("Multiplier", "stopSpeedHandToHandMult", 1);
-	stopSpeedDaggerMult = ini.GetDoubleValue("Multiplier", "stopSpeedDaggerMult", 1);
-	stopSpeedSwordMult = ini.GetDoubleValue("Multiplier", "stopSpeedSwordMult", 1);
-	stopSpeedGreatSwordMult = ini.GetDoubleValue("Multiplier", "stopSpeedGreatSwordMult", 1);
-	stopSpeedAxeMult = ini.GetDoubleValue("Multiplier", "stopSpeedAxeMult", 1);
-	stopSpeedMaceMult = ini.GetDoubleValue("Multiplier", "stopSpeedMaceMult", 1);
-	stopSpeed2hwMult = ini.GetDoubleValue("Multiplier", "stopSpeed2hwMult", 1);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedHandToHandMult", stopSpeedHandToHandMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedDaggerMult", stopSpeedDaggerMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedSwordMult", stopSpeedSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedGreatSwordMult", stopSpeedGreatSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedAxeMult", stopSpeedAxeMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeedMaceMult", stopSpeedMaceMult);
+	ReadFloatSetting(ini, "Multiplier", "fstopSpeed2hwMult", stopSpeed2hwMult);
 }
