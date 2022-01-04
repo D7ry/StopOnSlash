@@ -35,10 +35,13 @@ void hitStop::hitStopVanillaOp(int stopTimeMiliSec, float stopSpeed) {
 	if (pc && !hitStopping) {
 		DEBUG("executing stop! by speed {}", stopSpeed);
 		float orgSpd = pc->GetActorValue(RE::ActorValue::kWeaponSpeedMult);
+		float orgSpdL = pc->GetActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply);
 		pc->SetActorValue(RE::ActorValue::kWeaponSpeedMult, stopSpeed);
+		pc->SetActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply, stopSpeed);
 		hitStopping = true;
 		std::this_thread::sleep_for(std::chrono::milliseconds(stopTimeMiliSec));
 		pc->SetActorValue(RE::ActorValue::kWeaponSpeedMult, orgSpd);
+		pc->SetActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply, orgSpdL);
 		hitStopping = false;
 	}
 }
@@ -50,12 +53,14 @@ void hitStop::hitStopASFOp(int stopTimeMiliSec, float stopSpeed) {
 	if (pc && !hitStopping) {
 		DEBUG("executing stop! by speed {}", stopSpeed);
 		float speedDiff = stopSpeed - pc->GetActorValue(RE::ActorValue::kWeaponSpeedMult);
-		DEBUG("current speed is {}", pc->GetActorValue(RE::ActorValue::kWeaponSpeedMult));
+		float speedDiffL = stopSpeed - pc->GetActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply);
 		pc->ModActorValue(RE::ActorValue::kWeaponSpeedMult, speedDiff);
+		pc->ModActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply, speedDiffL);
 		DEBUG("speed right after execution is {}", pc->GetActorValue(RE::ActorValue::kWeaponSpeedMult));
 		hitStopping = true;
 		std::this_thread::sleep_for(std::chrono::milliseconds(stopTimeMiliSec));
 		pc->ModActorValue(RE::ActorValue::kWeaponSpeedMult, -speedDiff);
+		pc->ModActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply, -speedDiff);
 		hitStopping = false;
 	}
 }
