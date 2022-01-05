@@ -22,7 +22,7 @@ private:
 	static void stopASF(int stopTimeMiliSec, float stopSpeed);
 
 
-	static void hitStopBehaviorOp(RE::BSFixedString animVariable, int stopTimeMiliSec, float stopSpeed);
+	static void hitStopBehaviorOp(int stopTimeMiliSec, float stopSpeed);
 	static void hitStopSGTMOp(int stopTimeMiliSec, float stopSpeed);
 	static void hitStopVanillaOp(int stopTimeMiliSec, float stopSpeed);
 	static void hitStopASFOp(int stopTimeMiliSec, float stopSpeed);

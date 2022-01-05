@@ -13,13 +13,15 @@ inline void SGTM(float a_in) {
 @param animVariable animation variable related to weapon speed.
 @param stopTimeMiliSec how long ni miliseconds is the hitstop.
 @param stopSpeed weapon speed during hitstop. Suggested to be lower than 0.2*/
-void hitStop::hitStopBehaviorOp(RE::BSFixedString animVariable, int stopTimeMiliSec, float stopSpeed) {
+void hitStop::hitStopBehaviorOp(int stopTimeMiliSec, float stopSpeed) {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
 		DEBUG("executing stop! by speed {}", stopSpeed);
-		pc->SetGraphVariableFloat(animVariable, stopSpeed);
+		pc->SetGraphVariableFloat("SkySA_weaponSpeedMult", stopSpeed);
+		pc->SetGraphVariableFloat("SkySA_dwweaponsSpeedMult", stopSpeed);
 		std::this_thread::sleep_for(std::chrono::milliseconds(stopTimeMiliSec));
-		pc->SetGraphVariableFloat(animVariable, 1);
+		pc->SetGraphVariableFloat("SkySA_weaponSpeedMult", 1);
+		pc->SetGraphVariableFloat("SkySA_dwweaponsSpeedMult", 1);
 	}
 }
 
@@ -79,7 +81,7 @@ void hitStop::stopVanilla(int stopTimeMiliSec, float stopSpeed) {
 
 void hitStop::stopMCO(int stopTimeMiliSec, float stopSpeed) {
 	DEBUG("stop MCO!");
-	std::jthread hitstopThread = std::jthread(hitStopBehaviorOp, "SkySA_weaponSpeedMult", stopTimeMiliSec, stopSpeed / 100);
+	std::jthread hitstopThread = std::jthread(hitStopBehaviorOp, stopTimeMiliSec, stopSpeed / 100);
 	hitstopThread.detach();
 }
 
