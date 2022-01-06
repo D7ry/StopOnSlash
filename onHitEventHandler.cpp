@@ -1,4 +1,3 @@
-#include "C:/Users/Ty/Documents/SKSEPlugins/Build/Plugins/dTryHitStop/CMakeFiles/dTryHitStop.dir/Debug/cmake_pch.hxx"
 #include "onHitEventHandler.h"
 #include "stopHandler.h"
 #include "dataHandler.h"

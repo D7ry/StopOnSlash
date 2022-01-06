@@ -23,35 +23,35 @@ namespace stopTimeMs
 
 
 
-	inline static float stopTimePowerMult = 100;
+	inline static float stopTimePowerMult = 1;
 
-	inline static float stopTimeHandToHandMult = 100;
-	inline static float stopTimeDaggerMult = 100;
-	inline static float stopTimeSwordMult = 100;
-	inline static float stopTimeGreatSwordMult = 100;
-	inline static float stopTimeAxeMult = 100;
-	inline static float stopTimeMaceMult = 100;
-	inline static float stopTime2hwMult = 100;
+	inline static float stopTimeHandToHandMult = 1;
+	inline static float stopTimeDaggerMult = 1;
+	inline static float stopTimeSwordMult = 1;
+	inline static float stopTimeGreatSwordMult = 1;
+	inline static float stopTimeAxeMult = 1;
+	inline static float stopTimeMaceMult = 1;
+	inline static float stopTime2hwMult = 1;
 }
 
 
 namespace stopSpeed 
 {
-	inline static float objectStopSpeedPercent = 10;
-	inline static float bashStopSpeedPercent = 10;
-	inline static float blockedStopSpeedPercent = 10;
-	inline static float creatureStopSpeedPercent = 10;
+	inline static float objectStopSpeedPercent = 0.1;
+	inline static float bashStopSpeedPercent = 0.1;
+	inline static float blockedStopSpeedPercent = 0.1;
+	inline static float creatureStopSpeedPercent = 0.1;
 
 
 
-	inline static float stopSpeedPowerMult = 100;
+	inline static float stopSpeedPowerMult = 1;
 
-	inline static float stopSpeedHandToHandMult = 100;
-	inline static float stopSpeedDaggerMult = 100;
-	inline static float stopSpeedSwordMult = 100;
-	inline static float stopSpeedGreatSwordMult = 100;
-	inline static float stopSpeedAxeMult = 100;
-	inline static float stopSpeedMaceMult = 100;
-	inline static float stopSpeed2hwMult = 100;
+	inline static float stopSpeedHandToHandMult = 1;
+	inline static float stopSpeedDaggerMult = 1;
+	inline static float stopSpeedSwordMult = 1;
+	inline static float stopSpeedGreatSwordMult = 1;
+	inline static float stopSpeedAxeMult = 1;
+	inline static float stopSpeedMaceMult = 1;
+	inline static float stopSpeed2hwMult = 1;
 
 }

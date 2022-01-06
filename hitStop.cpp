@@ -69,25 +69,25 @@ void hitStop::hitStopASFOp(int stopTimeMiliSec, float stopSpeed) {
 
 void hitStop::stopASF(int stopTimeMiliSec, float stopSpeed) {
 	DEBUG("stop ASF!");
-	std::jthread hitstopThread = std::jthread(hitStopASFOp, stopTimeMiliSec, stopSpeed / 100);
+	std::jthread hitstopThread = std::jthread(hitStopASFOp, stopTimeMiliSec, stopSpeed);
 	hitstopThread.detach();
 }
 
 void hitStop::stopVanilla(int stopTimeMiliSec, float stopSpeed) {
 	DEBUG("stop Vanilla!");
-	std::jthread hitstopThread = std::jthread(hitStopVanillaOp, stopTimeMiliSec, stopSpeed / 100);
+	std::jthread hitstopThread = std::jthread(hitStopVanillaOp, stopTimeMiliSec, stopSpeed);
 	hitstopThread.detach();
 }
 
 void hitStop::stopMCO(int stopTimeMiliSec, float stopSpeed) {
 	DEBUG("stop MCO!");
-	std::jthread hitstopThread = std::jthread(hitStopBehaviorOp, stopTimeMiliSec, stopSpeed / 100);
+	std::jthread hitstopThread = std::jthread(hitStopBehaviorOp, stopTimeMiliSec, stopSpeed);
 	hitstopThread.detach();
 }
 
 void hitStop::stopSGTM(int stopTimeMiliSec, float stopSpeed) {
 	DEBUG("stop SGTM!");
-	std::jthread hitstopThread = std::jthread(hitStopSGTMOp, stopTimeMiliSec, stopSpeed/100);
+	std::jthread hitstopThread = std::jthread(hitStopSGTMOp, stopTimeMiliSec, stopSpeed);
 	hitstopThread.detach();
 }
 

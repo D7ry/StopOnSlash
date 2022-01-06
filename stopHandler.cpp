@@ -1,4 +1,3 @@
-#include "C:/Users/Ty/Documents/SKSEPlugins/Build/Plugins/dTryHitStop/CMakeFiles/dTryHitStop.dir/Debug/cmake_pch.hxx"
 #include "stopHandler.h"
 #include "hitStop.h"
 #include "SimpleIni.h"
@@ -27,26 +26,26 @@ RE::WEAPON_TYPE getPcWpnEnum() {
 
 
 void stopHandler::objectStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::objectStopTime * getTimeMult() / 100, stopSpeed::objectStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
+	powerMult(stopTimeMs::objectStopTime * getTimeMult(), stopSpeed::objectStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::bashStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::bashStopTime * getTimeMult() / 100, stopSpeed::bashStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
+	powerMult(stopTimeMs::bashStopTime * getTimeMult(), stopSpeed::bashStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::blockedStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::blockedStopTime * getTimeMult() / 100, stopSpeed::blockedStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
+	powerMult(stopTimeMs::blockedStopTime * getTimeMult(), stopSpeed::blockedStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::creatureStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::creatureStopTime * getTimeMult() / 100, stopSpeed::creatureStopSpeedPercent * getSpeedMult() / 100, isPowerAtk);
+	powerMult(stopTimeMs::creatureStopTime * getTimeMult(), stopSpeed::creatureStopSpeedPercent * getSpeedMult(), isPowerAtk);
 }
 
 void stopHandler::powerMult(float stopTime, float stopSpeed, bool isPower) {
 	if (isPower) {
 		DEBUG("applying power offset!");
-		DEBUG("stop time is multiplied by {}, and stop speed is multiplied by {}", stopTimeMs::stopTimePowerMult / 100, stopSpeed::stopSpeedPowerMult / 100);
-		hitStop::stop(stopTime * stopTimeMs::stopTimePowerMult / 100, stopSpeed * stopSpeed::stopSpeedPowerMult / 100);
+		DEBUG("stop time is multiplied by {}, and stop speed is multiplied by {}", stopTimeMs::stopTimePowerMult, stopSpeed::stopSpeedPowerMult);
+		hitStop::stop(stopTime * stopTimeMs::stopTimePowerMult, stopSpeed * stopSpeed::stopSpeedPowerMult);
 	}
 	else {
 		hitStop::stop(stopTime, stopSpeed);
@@ -96,6 +95,9 @@ static inline void ReadFloatSetting(CSimpleIniA& a_ini, const char* a_sectionNam
 	if (bFound) {
 		DEBUG("found {} with value {}", a_sectionName, bFound);
 		a_setting = static_cast<float>(a_ini.GetDoubleValue(a_sectionName, a_settingName));
+	}
+	else {
+		DEBUG("failed to find {} from {}", a_settingName, a_sectionName);
 	}
 }
 
