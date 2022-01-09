@@ -20,8 +20,7 @@ RE::WEAPON_TYPE getPcWpnEnum() {
 	if (wpnL && wpnL->IsWeapon()) {
 		return wpnL->As<RE::TESObjectWEAP>()->GetWeaponType();
 	}
-	DEBUG("player not holding any weapon, using H2H multiplier!");
-	return RE::WEAPON_TYPE::kHandToHandMelee;
+	return RE::WEAPON_TYPE::kUnknown;
 }
 
 
@@ -66,7 +65,7 @@ float stopHandler::getSpeedMult() {
 	case weapon::kOneHandAxe: return stopSpeedAxeMult; break;
 	case weapon::kTwoHandAxe: return stopSpeed2hwMult; break;
 	case weapon::kTwoHandSword: return stopSpeedGreatSwordMult; break;
-	default: return stopSpeedHandToHandMult; break;
+	default: return 1; break;
 	}
 }
 
@@ -82,7 +81,7 @@ float stopHandler::getTimeMult() {
 	case weapon::kOneHandAxe: return stopTimeAxeMult; break;
 	case weapon::kTwoHandAxe: return stopTime2hwMult; break;
 	case weapon::kTwoHandSword: return stopTimeGreatSwordMult; break;
-	default: return stopTimeHandToHandMult; break;
+	default: return 1; break;
 	}
 }
 

@@ -9,9 +9,20 @@ EventResult onHitEventHandler::ProcessEvent(const RE::TESHitEvent* a_event, RE::
 		return EventResult::kContinue;
 	}
 
-	DEBUG("onhit event triggers!");
-	if (a_event->projectile || !a_event->cause || !a_event->target) {
+	if (!a_event->cause || !a_event->target || !a_event->source) {
 		DEBUG("invalid hit event!");
+		return EventResult::kContinue;
+	}
+
+	auto hitsource = RE::TESForm::LookupByID<RE::TESObjectWEAP>(a_event->source);
+
+	if (!hitsource) {
+		DEBUG("Weapon Hit Source Not Found!");
+		return EventResult::kContinue;
+	}
+
+	if (hitsource->formType != RE::FormType::Weapon) {
+		DEBUG("Hit Source Is Not Weapon!");
 		return EventResult::kContinue;
 	}
 
