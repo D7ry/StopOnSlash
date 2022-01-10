@@ -10,8 +10,8 @@ public:
 	
 private:
 	static void powerMult(float stopTime, float stopSpeed, bool isPower);
-	static float getTimeMult();
-	static float getSpeedMult();
+	static float getTimeMult(RE::WEAPON_TYPE wpn);
+	static float getSpeedMult(RE::WEAPON_TYPE wpn);
 };
 
 namespace stopTimeMs

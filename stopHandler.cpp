@@ -25,19 +25,23 @@ RE::WEAPON_TYPE getPcWpnEnum() {
 
 
 void stopHandler::objectStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::objectStopTime * getTimeMult(), stopSpeed::objectStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	RE::WEAPON_TYPE wpn = getPcWpnEnum();
+	powerMult(stopTimeMs::objectStopTime * getTimeMult(wpn), stopSpeed::objectStopSpeedPercent * getSpeedMult(wpn), isPowerAtk);
 }
 
 void stopHandler::bashStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::bashStopTime * getTimeMult(), stopSpeed::bashStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	RE::WEAPON_TYPE wpn = getPcWpnEnum();
+	powerMult(stopTimeMs::bashStopTime * getTimeMult(wpn), stopSpeed::bashStopSpeedPercent * getSpeedMult(wpn), isPowerAtk);
 }
 
 void stopHandler::blockedStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::blockedStopTime * getTimeMult(), stopSpeed::blockedStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	RE::WEAPON_TYPE wpn = getPcWpnEnum();
+	powerMult(stopTimeMs::blockedStopTime * getTimeMult(wpn), stopSpeed::blockedStopSpeedPercent * getSpeedMult(wpn), isPowerAtk);
 }
 
 void stopHandler::creatureStop(bool isPowerAtk) {
-	powerMult(stopTimeMs::creatureStopTime * getTimeMult(), stopSpeed::creatureStopSpeedPercent * getSpeedMult(), isPowerAtk);
+	RE::WEAPON_TYPE wpn = getPcWpnEnum();
+	powerMult(stopTimeMs::creatureStopTime * getTimeMult(wpn), stopSpeed::creatureStopSpeedPercent * getSpeedMult(wpn), isPowerAtk);
 }
 
 void stopHandler::powerMult(float stopTime, float stopSpeed, bool isPower) {
@@ -53,10 +57,10 @@ void stopHandler::powerMult(float stopTime, float stopSpeed, bool isPower) {
 
 
 
-float stopHandler::getSpeedMult() {
+float stopHandler::getSpeedMult(RE::WEAPON_TYPE wpn) {
 	using weapon = RE::WEAPON_TYPE;
 	using namespace stopSpeed;
-	switch (getPcWpnEnum())
+	switch (wpn)
 	{
 	case weapon::kHandToHandMelee: return stopSpeedHandToHandMult; break;
 	case weapon::kOneHandDagger: return stopSpeedDaggerMult; break;
@@ -69,10 +73,10 @@ float stopHandler::getSpeedMult() {
 	}
 }
 
-float stopHandler::getTimeMult() {
+float stopHandler::getTimeMult(RE::WEAPON_TYPE wpn) {
 	using weapon = RE::WEAPON_TYPE;
 	using namespace stopTimeMs;
-	switch (getPcWpnEnum())
+	switch (wpn)
 	{
 	case weapon::kHandToHandMelee: return stopTimeHandToHandMult; break;
 	case weapon::kOneHandDagger: return stopTimeDaggerMult; break;
