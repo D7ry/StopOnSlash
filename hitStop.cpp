@@ -87,6 +87,9 @@ void hitStop::stopMCO(int stopTimeMiliSec, float stopSpeed) {
 
 void hitStop::stopSGTM(int stopTimeMiliSec, float stopSpeed) {
 	DEBUG("stop SGTM!");
+	if (RE::PlayerCharacter::GetSingleton()->HasEffectWithArchetype(RE::MagicTarget::Archetype::kSlowTime)) {
+		return;
+	}
 	std::jthread hitstopThread = std::jthread(hitStopSGTMOp, stopTimeMiliSec, stopSpeed);
 	hitstopThread.detach();
 }
