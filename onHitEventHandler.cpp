@@ -21,7 +21,7 @@ EventResult onHitEventHandler::ProcessEvent(const RE::TESHitEvent* a_event, RE::
 		return EventResult::kContinue;
 	}
 
-	if (hitsource->formType != RE::FormType::Weapon || !hitsource->IsMelee()) {
+	if (!hitsource->IsWeapon() || !hitsource->IsMelee()) {
 		DEBUG("Hit Source Is Not Melee Weapon!");
 		return EventResult::kContinue;
 	}
