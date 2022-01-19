@@ -24,6 +24,8 @@ public:
 
 	void readSettings();
 
+	bool NPCstop = true;
+
 	bool stopOnCreature = true;
 
 	bool stopOnObject = true;
