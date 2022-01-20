@@ -1,6 +1,5 @@
 #include "dataHandler.h"
-#include "stopHandler.h"
-
+#include "hitStop.h"
 #pragma region settingReader
 void dataHandler::ReadBoolSetting(CSimpleIniA& a_ini, const char* a_sectionName, const char* a_settingName, bool& a_setting)
 {
@@ -45,6 +44,8 @@ void dataHandler::ReadFloatSetting(CSimpleIniA& a_ini, const char* a_sectionName
 
 namespace settings {
 	dataHandler::combatFrameWork currFramework = dataHandler::combatFrameWork::Vanilla;
+
+	int activeThreadCt = 4;
 
 	bool NPCstop = true;
 
@@ -120,6 +121,15 @@ void dataHandler::readSettings() {
 	ReadBoolSetting(ini, "General", "bStopOnObject", stopOnObject);
 	ReadBoolSetting(ini, "General", "bStopOnBash", stopOnBash);
 	ReadBoolSetting(ini, "General", "bStopOnBlocked", stopOnBlocked);
+
+	ReadIntSetting(ini, "General", "iConcurrentHitStopCt", activeThreadCt);
+
+	//iff there's no NPC stop/framework is set to global time mult, no need for more than one thread.
+	if (!NPCstop || currFramework == combatFrameWork::STGM) {
+		DEBUG("forcing active thread count to 1");
+		hitStop::resetPool(1);
+	}
+	hitStop::resetPool(activeThreadCt);
 
 	using namespace stopTimeMs;
 	ReadFloatSetting(ini, "StopTime", "fstopOnBashMs", bashStopTime);

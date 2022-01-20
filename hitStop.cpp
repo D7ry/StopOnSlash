@@ -1,10 +1,13 @@
 #pragma once
 #include "hitStop.h"
+#include <unordered_set>
 #include <mutex>
+
 std::mutex mtx;
 
 /*set of actors experiencing hitstop*/
 static inline std::unordered_set<RE::Actor*> hitStoppingActors;
+
 
 inline void SGTM(float a_in) {
 	static float* g_SGTM = (float*)REL::ID(511883).address();
@@ -94,20 +97,17 @@ void hitStop::hitStopASFOp(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_ac
 
 void hitStop::stopASF(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("stop ASF!");
-	std::jthread hitstopThread = std::jthread(hitStopASFOp, stopTimeMiliSec, stopSpeed, a_actor);
-	hitstopThread.detach();
+	pool.push_task(hitStopASFOp, stopTimeMiliSec, stopSpeed, a_actor);
 }
 
 void hitStop::stopVanilla(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("stop Vanilla!");
-	std::jthread hitstopThread = std::jthread(hitStopVanillaOp, stopTimeMiliSec, stopSpeed, a_actor);
-	hitstopThread.detach();
+	pool.push_task(hitStopASFOp, stopTimeMiliSec, stopSpeed, a_actor);
 }
 
 void hitStop::stopMCO(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("stop MCO!");
-	std::jthread hitstopThread = std::jthread(hitStopBehaviorOp, stopTimeMiliSec, stopSpeed, a_actor);
-	hitstopThread.detach();
+	pool.push_task(hitStopBehaviorOp, stopTimeMiliSec, stopSpeed, a_actor);
 }
 
 void hitStop::stopSGTM(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
@@ -115,8 +115,7 @@ void hitStop::stopSGTM(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor)
 	if (a_actor->HasEffectWithArchetype(RE::MagicTarget::Archetype::kSlowTime)) {
 		return;
 	}
-	std::jthread hitstopThread = std::jthread(hitStopSGTMOp, stopTimeMiliSec, stopSpeed, a_actor);
-	hitstopThread.detach();
+	pool.push_task(hitStopSGTMOp, stopTimeMiliSec, stopSpeed, a_actor);
 }
 
 
@@ -127,6 +126,7 @@ void hitStop::stop(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
 	if (isActorHitstopping(a_actor)) { //check iff actor is in hitstop.
 		return;
 	}
+	DEBUG("current thread available: {}", pool.get_thread_count());
 	registerActor(a_actor);
 	using method = dataHandler::combatFrameWork;
 	switch (settings::currFramework) {

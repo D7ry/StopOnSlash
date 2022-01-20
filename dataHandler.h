@@ -30,7 +30,10 @@ namespace settings
 {
 	extern dataHandler::combatFrameWork currFramework;
 
+	extern int activeThreadCt;
+
 	extern bool NPCstop;
+
 
 	extern bool stopOnCreature;
 
