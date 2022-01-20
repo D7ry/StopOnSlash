@@ -132,7 +132,7 @@ void hitStop::stop(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
 	switch (settings::currFramework) {
 	case method::MCO: stopMCO(stopTimeMiliSec, stopSpeed, a_actor); break;
 	case method::ASF: stopASF(stopTimeMiliSec, stopSpeed, a_actor); break;
-	case method::Vanilla: stopVanilla(stopTimeMiliSec, stopSpeed, a_actor); break;
+	case method::Vanilla: stopASF(stopTimeMiliSec, stopSpeed, a_actor); break;
 	case method::STGM: stopSGTM(stopTimeMiliSec, stopSpeed, a_actor); break; //SGTM Stop only happens to player. A check is placed in onHitEventHandler to make sure it doesn't happen to NPC.
 	default: stopVanilla(stopTimeMiliSec, stopSpeed, a_actor); break;
 	}
