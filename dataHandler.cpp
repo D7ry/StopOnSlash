@@ -114,7 +114,7 @@ void dataHandler::readSettings() {
 	case 3: currFramework = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
 	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
 	}
-
+	ReadBoolSetting(ini, "General", "bNPChitStop", NPCstop);
 	ReadBoolSetting(ini, "General", "bStopOnCreature", stopOnCreature);
 	ReadBoolSetting(ini, "General", "bStopOnDead", stopOnDead);
 	ReadBoolSetting(ini, "General", "bStopOnObject", stopOnObject);
