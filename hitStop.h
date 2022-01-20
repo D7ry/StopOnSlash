@@ -1,6 +1,6 @@
 #pragma once
 #include "dataHandler.h"
-
+#include <unordered_set>
 namespace Utils
 {
 	/*
@@ -16,19 +16,22 @@ public:
 	static void stop(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 
 private:
-	static void stopSGTM(int stopTimeMiliSec, float stopSpeed);
+	static void stopSGTM(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 	static void stopVanilla(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 	static void stopMCO(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 	static void stopASF(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 
 
-	static void hitStopSGTMOp(int stopTimeMiliSec, float stopSpeed);
+	static void hitStopSGTMOp(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 	static void hitStopBehaviorOp(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 	static void hitStopVanillaOp(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 	static void hitStopASFOp(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor);
 
-	/*map containing all actors that are experiencing hitstop */
-	//static std::map<RE::Actor, bool> hitstopMap;
+
+
+	static bool isActorHitstopping(RE::Actor* a_actor);
+	static void registerActor(RE::Actor* a_actor);
+	static void checkOutActor(RE::Actor* a_actor);
 };
 	
 
