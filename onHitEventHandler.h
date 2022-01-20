@@ -25,9 +25,8 @@ public:
 	}
 
 private:
-	void playerMeleeHit(const RE::TESHitEvent* a_event);
+	void processMeleeHit(const RE::TESHitEvent* a_event, RE::Actor* hitter, RE::TESObjectWEAP* weapon);
 
-	void playerGottenHit(const RE::TESHitEvent* a_event);
 
 	bool hitLivingTarget(const RE::TESHitEvent* a_event);
 

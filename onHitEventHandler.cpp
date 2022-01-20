@@ -8,7 +8,6 @@ EventResult onHitEventHandler::ProcessEvent(const RE::TESHitEvent* a_event, RE::
 		ERROR("Event Source not found");
 		return EventResult::kContinue;
 	}
-
 	if (!a_event->cause || !a_event->target || !a_event->source) {
 		DEBUG("invalid hit event!");
 		return EventResult::kContinue;
@@ -27,82 +26,86 @@ EventResult onHitEventHandler::ProcessEvent(const RE::TESHitEvent* a_event, RE::
 	}
 
 	if (a_event->cause->IsPlayerRef()) {
-		playerMeleeHit(a_event);
+		processMeleeHit(a_event, a_event->cause->As<RE::Actor>(), hitsource);
+	}
+	else if (a_event->cause->formType == RE::FormType::ActorCharacter && settings::NPCstop && settings::currFramework != dataHandler::combatFrameWork::STGM) {
+		processMeleeHit(a_event, a_event->cause->As<RE::Actor>(), hitsource);
 	}
 
 	return EventResult::kContinue;
 }
 
-void onHitEventHandler::playerMeleeHit(const RE::TESHitEvent* a_event) {
-	DEBUG("player melee hit!");
+void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Actor* hitter, RE::TESObjectWEAP* weapon) {
+	DEBUG("melee hit!");
 	auto target = a_event->target.get();
 	if (!target) {
-		DEBUG("Target Actor Not Found!");
 		return;
 	}
 
+	if (!hitter->Is3DLoaded()) {
+		return;
+	}
 	bool isPower = a_event->flags.any(RE::TESHitEvent::Flag::kPowerAttack);
 
 	if (!isPower) {
-		auto pc = RE::PlayerCharacter::GetSingleton();
-		if (pc && pc->currentProcess && pc->currentProcess->high && pc->currentProcess->high->attackData && pc->currentProcess->high->attackData->data.flags.any(RE::AttackData::AttackFlag::kPowerAttack)) {
+		if (hitter && hitter->currentProcess && hitter->currentProcess->high && hitter->currentProcess->high->attackData && hitter->currentProcess->high->attackData->data.flags.any(RE::AttackData::AttackFlag::kPowerAttack)) {
 			isPower = true;
 		}
 	}
 
 	//iff target is object
 	if (isObject(target)) {
-		if (!dataHandler::GetSingleton()->stopOnObject) {
+		if (!settings::stopOnObject) {
 			DEBUG("object, no hit stop!");
 			return;
 		}
 		DEBUG("stop on object");
-		stopHandler::objectStop(isPower);
+		stopHandler::calculateStop(isPower, hitter, weapon, stopHandler::STOPTYPE::objectStop);
 		return;
 	}
 
 
 	//target now has to be a creature.
-	if (!dataHandler::GetSingleton()->stopOnCreature) {
+	if (!settings::stopOnCreature) {
 		DEBUG("hit creature, no hitstop!");
 		return;
 	}
 
 	auto targetActor = target->As<RE::Actor>();
 	if (!isAlive(targetActor)) {
-		if (!dataHandler::GetSingleton()->stopOnDead) {
+		if (!settings::stopOnDead) {
 			DEBUG("dead actor, no hit stop!");
 			return;
 		}
 		DEBUG("stop on dead creature!");
-		stopHandler::creatureStop(isPower);
+		stopHandler::calculateStop(isPower, hitter, weapon, stopHandler::STOPTYPE::creatureStop);
 		return;
 	}
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
-		if (!dataHandler::GetSingleton()->stopOnBash) {
+		if (!settings::stopOnBash) {
 			DEBUG("bash hit, no hit stop!");
 			return;
 		}
 		DEBUG("stop on bash!");
-		stopHandler::bashStop(isPower);
+		stopHandler::calculateStop(isPower, hitter, weapon, stopHandler::STOPTYPE::bashStop);
 		return;
 	}
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kHitBlocked)) {
-		if (!dataHandler::GetSingleton()->stopOnBlocked) {
+		if (!settings::stopOnBlocked) {
 			DEBUG("hit blocked, no hit stop!");
 			return;
 		}
 		DEBUG("stop on blocked attack!");
-		stopHandler::blockedStop(isPower);
+		stopHandler::calculateStop(isPower, hitter, weapon, stopHandler::STOPTYPE::blockedStop);
 		return;
 	}
 
 
 	//iff all above are checked, it can only be a living creature.
 	DEBUG("stop on creature!");
-	stopHandler::creatureStop(isPower);
+	stopHandler::calculateStop(isPower, hitter, weapon, stopHandler::STOPTYPE::creatureStop);
 }
 
 
