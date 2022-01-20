@@ -7,7 +7,7 @@ namespace Papyrus
 {
 	void StopOnSlash_MCM::OnConfigClose(RE::TESQuest*)
 	{
-		dataHandler::GetSingleton()->readSettings();
+		dataHandler::readSettings();
 	}
 
 	bool StopOnSlash_MCM::Register(RE::BSScript::IVirtualMachine* a_vm)
