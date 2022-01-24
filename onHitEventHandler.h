@@ -25,18 +25,29 @@ public:
 	}
 
 private:
-	void processMeleeHit(const RE::TESHitEvent* a_event, RE::Actor* hitter, RE::TESObjectWEAP* weapon);
-
-
-	bool hitLivingTarget(const RE::TESHitEvent* a_event);
-
-	bool isAlive(RE::Actor* a_target);
-	bool isObject(RE::TESObjectREFR* a_obj);
-
+	inline void processMeleeHit(const RE::TESHitEvent* a_event, RE::Actor* hitter, RE::TESObjectWEAP* weapon);
 	onHitEventHandler() = default;
 	~onHitEventHandler() = default;
 	onHitEventHandler(const onHitEventHandler&) = delete;
 	onHitEventHandler(onHitEventHandler&&) = delete;
 	onHitEventHandler& operator=(const onHitEventHandler&) = delete;
 	onHitEventHandler& operator=(onHitEventHandler&&) = delete;
+
+	inline bool isObject(RE::TESObjectREFR* a_obj) {
+		if (a_obj->formType == RE::FormType::ActorCharacter) {
+			DEBUG("Target is actor!");
+			return false;
+		}
+		return true;
+	}
+
+
+	inline bool isAlive(RE::Actor* a_target) {				//stolen from Maxsu's OHAF
+
+		if (a_target->IsDead()) {
+			DEBUG("Target Actor is Dead!");
+			return false;
+		}
+		return true;
+	}
 };
