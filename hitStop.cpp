@@ -4,10 +4,8 @@
 #include <mutex>
 
 std::mutex mtx;
-
 /*set of actors experiencing hitstop*/
 static inline std::unordered_set<RE::Actor*> hitStoppingActors;
-
 
 inline void SGTM(float a_in) {
 	static float* g_SGTM = (float*)REL::ID(511883).address();
@@ -118,6 +116,10 @@ void hitStop::stopSGTM(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor)
 	pool.push_task(hitStopSGTMOp, stopTimeMiliSec, stopSpeed, a_actor);
 }
 
+void hitStop::calculateStop(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType) {
+	RE::WEAPON_TYPE wpnType = weapon->GetWeaponType();
+	stop(getStopTime(wpnType, stopType, isPowerAtk), getStopSpeed(wpnType, stopType, isPowerAtk), hitter);
+}
 
 /*call this to start a new hitstop. Also checks if a_actor is in the process of hitstop. 
 @param a_actor: the actor who will experience hitstop effect.*/
