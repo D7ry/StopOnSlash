@@ -32,7 +32,9 @@ namespace settings
 
 	extern int activeThreadCt;
 
-	extern bool NPCstop;
+	extern bool pcHitStop;
+
+	extern bool npcHitStop;
 
 
 	extern bool stopOnCreature;

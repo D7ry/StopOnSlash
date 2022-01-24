@@ -47,7 +47,9 @@ namespace settings {
 
 	int activeThreadCt = 4;
 
-	bool NPCstop = true;
+	bool pcHitStop = true;
+
+	bool npcHitStop = true;
 
 	bool stopOnCreature = true;
 
@@ -115,7 +117,8 @@ void dataHandler::readSettings() {
 	case 3: currFramework = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
 	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
 	}
-	ReadBoolSetting(ini, "General", "bNPChitStop", NPCstop);
+	ReadBoolSetting(ini, "General", "bPChitStop", pcHitStop);
+	ReadBoolSetting(ini, "General", "bNPChitStop", npcHitStop);
 	ReadBoolSetting(ini, "General", "bStopOnCreature", stopOnCreature);
 	ReadBoolSetting(ini, "General", "bStopOnDead", stopOnDead);
 	ReadBoolSetting(ini, "General", "bStopOnObject", stopOnObject);
@@ -125,7 +128,7 @@ void dataHandler::readSettings() {
 	ReadIntSetting(ini, "General", "iConcurrentHitStopCt", activeThreadCt);
 
 	//iff there's no NPC stop/framework is set to global time mult, no need for more than one thread.
-	if (!NPCstop || currFramework == combatFrameWork::STGM) {
+	if (!npcHitStop || currFramework == combatFrameWork::STGM) {
 		DEBUG("forcing active thread count to 1");
 		hitStop::resetPool(1);
 	}
