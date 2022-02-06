@@ -125,10 +125,10 @@ void hitStop::calculateStop(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEA
 @param a_actor: the actor who will experience hitstop effect.*/
 void hitStop::stop(int stopTimeMiliSec, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("finalizing hitstop. stop time: {}, stop speed: {}, stop actor: {}", stopTimeMiliSec, stopSpeed, a_actor->GetName());
-	if (isActorHitstopping(a_actor)) { //check iff actor is in hitstop.
+	if (isActorHitstopping(a_actor)) { //check iff actor is in hitstop already.
 		return;
 	}
-	DEBUG("current thread available: {}", pool.get_thread_count());
+	//DEBUG("current thread available: {}", pool.get_thread_count());
 	registerActor(a_actor);
 	using method = dataHandler::combatFrameWork;
 	switch (settings::currFramework) {
