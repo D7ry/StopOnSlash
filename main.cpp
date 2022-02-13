@@ -1,5 +1,6 @@
 #include "loadGame.h"
 #include "Papyrus.h"
+#include "hitStop.h"
 #if ANNIVERSARY_EDITION
 
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
@@ -66,5 +67,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	}
 	g_message->RegisterListener(loadGame::EventCallBACK);
 	Papyrus::Register();
+	SKSE::AllocTrampoline(1 << 5);
+	MainUpdateHook::InstallHook();
 	return true;
 }

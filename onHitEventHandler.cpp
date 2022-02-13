@@ -72,7 +72,7 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 			return;
 		}
 		DEBUG("stop on object");
-		hitStop::calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::objectStop);
+		hitStop::GetSingleton()->calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::objectStop);
 		return;
 	}
 
@@ -90,7 +90,7 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 			return;
 		}
 		DEBUG("stop on dead creature!");
-		hitStop::calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::creatureStop);
+		hitStop::GetSingleton()->calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::creatureStop);
 		return;
 	}
 
@@ -100,7 +100,7 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 			return;
 		}
 		DEBUG("stop on bash!");
-		hitStop::calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::bashStop);
+		hitStop::GetSingleton()->calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::bashStop);
 		return;
 	}
 
@@ -110,14 +110,14 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 			return;
 		}
 		DEBUG("stop on blocked attack!");
-		hitStop::calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::blockedStop);
+		hitStop::GetSingleton()->calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::blockedStop);
 		return;
 	}
 
 
 	//iff all above are checked, it can only be a living creature.
 	DEBUG("stop on creature!");
-	hitStop::calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::creatureStop);
+	hitStop::GetSingleton()->calculateStop(isPower, hitter, weapon, hitStop::STOPTYPE::creatureStop);
 }
 
 

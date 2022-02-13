@@ -45,9 +45,8 @@ void dataHandler::ReadFloatSetting(CSimpleIniA& a_ini, const char* a_sectionName
 namespace settings {
 	dataHandler::combatFrameWork currFramework = dataHandler::combatFrameWork::Vanilla;
 
-	int activeThreadCt = 4;
-
 	bool pcHitStop = true;
+
 
 	bool npcHitStop = true;
 
@@ -61,12 +60,26 @@ namespace settings {
 
 	bool stopOnBlocked = true;
 
-	namespace stopTimeMs
+
+	bool pcShake = true;
+	bool shakeOnLight = false;
+
+	bool shakeOnCreature = true;
+
+	bool shakeOnObject = true;
+
+	bool shakeOnDead = true;
+
+	bool shakeOnBash = true;
+
+	bool shakeOnBlocked = true;
+
+	namespace stopTime
 	{
-		float objectStopTime = 100;
-		float bashStopTime = 100;
-		float blockedStopTime = 100;
-		float creatureStopTime = 100;
+		float objectStopTime = 0.1;
+		float bashStopTime = 0.1;
+		float blockedStopTime = 0.1;
+		float creatureStopTime = 0.1;
 
 		float stopTimePowerMult = 1;
 
@@ -96,6 +109,42 @@ namespace settings {
 		float stopSpeedMaceMult = 1;
 		float stopSpeed2hwMult = 1;
 	}
+
+	namespace shakeTime
+	{
+		extern float objectShakeTime = 0.3;
+		extern float bashShakeTime = 0.3;
+		extern float blockedShakeTime = 0.3;
+		extern float creatureShakeTime = 0.3;
+
+		extern float ShakeTimePowerMult = 1;
+
+		extern float ShakeTimeHandToHandMult = 1;
+		extern float ShakeTimeDaggerMult = 1;
+		extern float ShakeTimeSwordMult = 1;
+		extern float ShakeTimeGreatSwordMult = 1;
+		extern float ShakeTimeAxeMult = 1;
+		extern float ShakeTimeMaceMult = 1;
+		extern float ShakeTime2hwMult = 1;
+	}
+
+	namespace shakeMagnitude
+	{
+		extern float objectShakeMagnitude = 0.3;
+		extern float bashShakeMagnitude = 0.3;
+		extern float blockedShakeMagnitude = 0.3;
+		extern float creatureShakeMagnitude = 0.3;
+
+		extern float ShakeMagnitudePowerMult = 1;
+
+		extern float ShakeMagnitudeHandToHandMult = 1;
+		extern float ShakeMagnitudeDaggerMult = 1;
+		extern float ShakeMagnitudeSwordMult = 1;
+		extern float ShakeMagnitudeGreatSwordMult = 1;
+		extern float ShakeMagnitudeAxeMult = 1;
+		extern float ShakeMagnitudeMaceMult = 1;
+		extern float ShakeMagnitude2hwMult = 1;
+	}
 }
 
 
@@ -112,9 +161,8 @@ void dataHandler::readSettings() {
 	INFO("frameworkInt set to {}", frameworkInt);
 	switch (frameworkInt) {
 	case 0: currFramework = combatFrameWork::Vanilla; DEBUG("using vanilla framework!"); break;
-	case 1: currFramework = combatFrameWork::ASF; DEBUG("using ASF framework!"); break;
-	case 2: currFramework = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
-	case 3: currFramework = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
+	case 1: currFramework = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
+	case 2: currFramework = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
 	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
 	}
 	ReadBoolSetting(ini, "General", "bPChitStop", pcHitStop);
@@ -125,20 +173,18 @@ void dataHandler::readSettings() {
 	ReadBoolSetting(ini, "General", "bStopOnBash", stopOnBash);
 	ReadBoolSetting(ini, "General", "bStopOnBlocked", stopOnBlocked);
 
-	ReadIntSetting(ini, "General", "iConcurrentHitStopCt", activeThreadCt);
-
-	//iff there's no NPC stop/framework is set to global time mult, no need for more than one thread.
-	if (!npcHitStop || currFramework == combatFrameWork::STGM) {
-		DEBUG("forcing active thread count to 1");
-		hitStop::resetPool(1);
-	}
-	hitStop::resetPool(activeThreadCt);
-
-	using namespace stopTimeMs;
-	ReadFloatSetting(ini, "StopTime", "fstopOnBashMs", bashStopTime);
-	ReadFloatSetting(ini, "StopTime", "fstopOnObjectMs", objectStopTime);
-	ReadFloatSetting(ini, "StopTime", "fstopOnBlockedMs", blockedStopTime);
-	ReadFloatSetting(ini, "StopTime", "fstopOnCreatureMs", creatureStopTime);
+	ReadBoolSetting(ini, "General", "bpcShake", pcShake);
+	ReadBoolSetting(ini, "General", "bshakeOnLight", shakeOnLight);
+	ReadBoolSetting(ini, "General", "bshakeOnCreature", shakeOnCreature);
+	ReadBoolSetting(ini, "General", "bshakeOnDead", shakeOnDead);
+	ReadBoolSetting(ini, "General", "bshakeOnObject", shakeOnObject);
+	ReadBoolSetting(ini, "General", "bshakeOnBash", shakeOnBash);
+	ReadBoolSetting(ini, "General", "bshakeOnBlocked", shakeOnBlocked);
+	using namespace stopTime;
+	ReadFloatSetting(ini, "StopTime", "fstopOnBash", bashStopTime);
+	ReadFloatSetting(ini, "StopTime", "fstopOnObject", objectStopTime);
+	ReadFloatSetting(ini, "StopTime", "fstopOnBlocked", blockedStopTime);
+	ReadFloatSetting(ini, "StopTime", "fstopOnCreature", creatureStopTime);
 
 	ReadFloatSetting(ini, "Multiplier", "fstopTimePowerMult", stopTimePowerMult);
 
@@ -166,5 +212,37 @@ void dataHandler::readSettings() {
 	ReadFloatSetting(ini, "Multiplier", "fstopSpeedAxeMult", stopSpeedAxeMult);
 	ReadFloatSetting(ini, "Multiplier", "fstopSpeedMaceMult", stopSpeedMaceMult);
 	ReadFloatSetting(ini, "Multiplier", "fstopSpeed2hwMult", stopSpeed2hwMult);
+
+	using namespace shakeMagnitude;
+	ReadFloatSetting(ini, "ShakeMagnitude", "fbashShakeMagnitude", bashShakeMagnitude);
+	ReadFloatSetting(ini, "ShakeMagnitude", "fobjectShakeMagnitude", objectShakeMagnitude);
+	ReadFloatSetting(ini, "ShakeMagnitude", "fblockedShakeMagnitude", blockedShakeMagnitude);
+	ReadFloatSetting(ini, "ShakeMagnitude", "fcreatureShakeMagnitude", creatureShakeMagnitude);
+
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudePowerMult", ShakeMagnitudePowerMult);
+
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudeHandToHandMult", ShakeMagnitudeHandToHandMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudeDaggerMult", ShakeMagnitudeDaggerMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudeSwordMult", ShakeMagnitudeSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudeGreatSwordMult", ShakeMagnitudeGreatSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudeAxeMult", ShakeMagnitudeAxeMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitudeMaceMult", ShakeMagnitudeMaceMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeMagnitude2hwMult", ShakeMagnitude2hwMult);
+
+	using namespace shakeTime;
+	ReadFloatSetting(ini, "ShakeTime", "fShakeOnBash", bashShakeTime);
+	ReadFloatSetting(ini, "ShakeTime", "fShakeOnObject", objectShakeTime);
+	ReadFloatSetting(ini, "ShakeTime", "fShakeOnBlocked", blockedShakeTime);
+	ReadFloatSetting(ini, "ShakeTime", "fShakeOnCreature", creatureShakeTime);
+
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimePowerMult", ShakeTimePowerMult);
+
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimeHandToHandMult", ShakeTimeHandToHandMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimeDaggerMult", ShakeTimeDaggerMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimeSwordMult", ShakeTimeSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimeGreatSwordMult", ShakeTimeGreatSwordMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimeAxeMult", ShakeTimeAxeMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeTimeMaceMult", ShakeTimeMaceMult);
+	ReadFloatSetting(ini, "Multiplier", "fShakeTime2hwMult", ShakeTime2hwMult);
 }
 
