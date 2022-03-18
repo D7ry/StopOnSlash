@@ -62,25 +62,32 @@ void hitStop::calculateStop(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEA
 	RE::WEAPON_TYPE wpnType = weapon->GetWeaponType();
 	stop(getStopTime(wpnType, stopType, isPowerAtk), getStopSpeed(wpnType, stopType, isPowerAtk), hitter);
 	//FIXME: fix this quick workaround
-	if (hitter->IsPlayerRef() && settings::pcShake)
-	switch (stopType) {
-	case STOPTYPE::objectStop:
-		if (settings::shakeOnObject) {
-			shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
+	if (hitter->IsPlayerRef() && settings::pcShake) {
+		if (!isPowerAtk) {
+			if (!settings::shakeOnLight) {
+				return;
+			}
 		}
-	case STOPTYPE::bashStop:
-		if (settings::shakeOnBash) {
-			shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
-		}
-	case STOPTYPE::blockedStop:
-		if (settings::shakeOnBlocked) {
-			shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
-		}
-	case STOPTYPE::creatureStop:
-		if (settings::shakeOnCreature) {
-			shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
+		switch (stopType) {
+		case STOPTYPE::objectStop:
+			if (settings::shakeOnObject) {
+				shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
+			}
+		case STOPTYPE::bashStop:
+			if (settings::shakeOnBash) {
+				shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
+			}
+		case STOPTYPE::blockedStop:
+			if (settings::shakeOnBlocked) {
+				shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
+			}
+		case STOPTYPE::creatureStop:
+			if (settings::shakeOnCreature) {
+				shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
+			}
 		}
 	}
+
 
 }
 
