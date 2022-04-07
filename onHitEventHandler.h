@@ -35,7 +35,7 @@ private:
 
 	inline bool isObject(RE::TESObjectREFR* a_obj) {
 		if (a_obj->formType == RE::FormType::ActorCharacter) {
-			DEBUG("Target is actor!");
+			//DEBUG("Target is actor!");
 			return false;
 		}
 		return true;
@@ -45,7 +45,7 @@ private:
 	inline bool isAlive(RE::Actor* a_target) {				//stolen from Maxsu's OHAF
 
 		if (a_target->IsDead()) {
-			DEBUG("Target Actor is Dead!");
+			//DEBUG("Target Actor is Dead!");
 			return false;
 		}
 		return true;

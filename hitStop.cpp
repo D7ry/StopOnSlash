@@ -1,22 +1,36 @@
 #pragma once
 #include "hitStop.h"
-static const RE::BSFixedString GVF_MCOSpeed = "MCO_AttackSpeed";
-static const RE::BSFixedString GVF_SkysaSpeed = "SkySA_weaponSpeedMult";
-
 namespace offsets
 {
 	inline void SGTM(float a_in) {
+#if ANNIVERSARY_EDITION
+		static float* g_SGTM = (float*)REL::ID(388443).address();
+		*g_SGTM = a_in;
+		using func_t = decltype(SGTM);
+		REL::Relocation<func_t> func{ REL::ID(68246) };
+#else
 		static float* g_SGTM = (float*)REL::ID(511883).address();
 		*g_SGTM = a_in;
 		using func_t = decltype(SGTM);
 		REL::Relocation<func_t> func{ REL::ID(66989) };
+#endif
 		return;
 	}
 
+	
+#if ANNIVERSARY_EDITION
+	typedef void(_fastcall* _shakeCamera)(float strength, RE::NiPoint3 source, float duration);
+	static REL::Relocation<_shakeCamera> shakeCamera{ REL::ID(33012) };
+#else
 	typedef void(_fastcall* _shakeCamera)(float strength, RE::NiPoint3 source, float duration);
 	static REL::Relocation<_shakeCamera> shakeCamera{ REL::ID(32275) };
-
+#endif
 };
+
+static inline const RE::BSFixedString GVF_MCOSpeed = "MCO_AttackSpeed";
+static inline const RE::BSFixedString GVF_SkysaSpeed = "SkySA_weaponSpeedMult";
+
+
 inline void revertBehavior(float speedDiff, RE::Actor* a_actor, RE::BSFixedString GVF) {
 	float currSpeed;
 	if (!a_actor->GetGraphVariableFloat(GVF, currSpeed)) {
@@ -38,6 +52,11 @@ inline void revertVanilla(float speedDiffL, float speedDiffR, RE::Actor* a_actor
 inline void revertSGTM() {
 	offsets::SGTM(1);
 }
+/*Asynchronously revert a hitstop's effect, chancing actor's speed back to original.
+@param stopTime: (in seconds) how long should the revert function wait before reverting speed.
+@param speedDiffL: left hand speed difference between current speed and original speed.
+@param speedDiffR: right hand speed difference between current speed and original speed.
+@param a_actor: actor whose attack speed will be reverted.*/
 void hitStop::asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor) {
 	DEBUG("waiting for {}", stopTime * 1000);
 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(stopTime * 1000)));
@@ -78,7 +97,7 @@ void hitStop::stopMCO(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 }
 
 /*Distar is a hippie*/
-void hitStop::stopDistar(float stopTime, float stopSpeed, RE::Actor* a_actor) {
+void hitStop::stopSkysaT(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 	behaviorHS(stopTime, stopSpeed, a_actor, GVF_SkysaSpeed);
 }
 
@@ -93,23 +112,27 @@ void hitStop::stopSGTM(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 	t.detach();
 }
 
-void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType) {
+void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, SOS_HITATTR stopType) {
 	RE::WEAPON_TYPE wpnType = weapon->GetWeaponType();
 	if (!hitStoppingActors.contains(hitter)) {
 		switch (stopType) {
-		case STOPTYPE::bashStop:
+		case SOS_HITATTR::bash:
 			if (settings::stopOnBash) {
 				stop(isPowerAtk, hitter, stopType, wpnType);
 			} break;
-		case STOPTYPE::blockedStop:
+		case SOS_HITATTR::blocked:
 			if (settings::stopOnBlocked) {
 				stop(isPowerAtk, hitter, stopType, wpnType);
 			} break;
-		case STOPTYPE::creatureStop:
+		case SOS_HITATTR::creature:
 			if (settings::stopOnCreature) {
 				stop(isPowerAtk, hitter, stopType, wpnType);
 			} break;
-		case STOPTYPE::objectStop:
+		case SOS_HITATTR::deadCreature:
+			if (settings::stopOnDead) {
+				stop(isPowerAtk, hitter, SOS_HITATTR::creature, wpnType);
+			} break;
+		case SOS_HITATTR::object:
 			if (settings::stopOnObject) {
 				stop(isPowerAtk, hitter, stopType, wpnType);
 			} break;
@@ -118,19 +141,23 @@ void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObject
 	}
 	if (hitter->IsPlayerRef() && settings::pcShake) {
 		switch (stopType) {
-		case STOPTYPE::bashStop:
+		case SOS_HITATTR::bash:
 			if (settings::shakeOnBash) {
 				shake(isPowerAtk, hitter, stopType, wpnType);
 			} break;
-		case STOPTYPE::blockedStop:
+		case SOS_HITATTR::blocked:
 			if (settings::shakeOnBlocked) {
 				shake(isPowerAtk, hitter, stopType, wpnType);
 			} break;
-		case STOPTYPE::creatureStop:
+		case SOS_HITATTR::creature:
 			if (settings::shakeOnCreature) {
 				shake(isPowerAtk, hitter, stopType, wpnType);
 			} break;
-		case STOPTYPE::objectStop:
+		case SOS_HITATTR::deadCreature:
+			if (settings::shakeOnDead) {
+				stop(isPowerAtk, hitter, SOS_HITATTR::creature, wpnType);
+			}
+		case SOS_HITATTR::object:
 			if (settings::shakeOnObject) {
 				shake(isPowerAtk, hitter, stopType, wpnType);
 			} break;
@@ -138,7 +165,7 @@ void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObject
 		
 	}
 }
-void hitStop::stop(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType) {
+void hitStop::stop(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType) {
 	
 	float stopTime = getStopTime(wpnType, stopType, isPowerAtk);
 	float stopSpeed = getStopSpeed(wpnType, stopType, isPowerAtk);
@@ -147,36 +174,36 @@ void hitStop::stop(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WE
 	switch (settings::currFramework) {
 	case method::MCO: stopMCO(stopTime, stopSpeed, hitter); break;
 	case method::Vanilla: stopVanilla(stopTime, stopSpeed, hitter); break;
-	case method::Skysa2: stopDistar(stopTime, stopSpeed, hitter); break;
+	case method::Skysa2: stopSkysaT(stopTime, stopSpeed, hitter); break;
 	case method::SGTM:
-		if (hitter->IsPlayerRef()) {
+		if (hitter->IsPlayerRef()) { //SGTM is player only.
 			stopSGTM(stopTime, stopSpeed, hitter);
 		}
-		break; //SGTM Stop only happens to player. A check is placed in onHitEventHandler to make sure it doesn't happen to NPC.
+		break;
 	}
 	
 }
 
-void hitStop::shake(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType) {
+void hitStop::shake(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType) {
 	if (!isPowerAtk) {
 		if (!settings::shakeOnLight) {
 			return;
 		}
 	}
 	switch (stopType) {
-	case STOPTYPE::objectStop:
+	case SOS_HITATTR::object:
 		if (settings::shakeOnObject) {
 			offsets::shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
 		}
-	case STOPTYPE::bashStop:
+	case SOS_HITATTR::bash:
 		if (settings::shakeOnBash) {
 			offsets::shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
 		}
-	case STOPTYPE::blockedStop:
+	case SOS_HITATTR::blocked:
 		if (settings::shakeOnBlocked) {
 			offsets::shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
 		}
-	case STOPTYPE::creatureStop:
+	case SOS_HITATTR::creature:
 		if (settings::shakeOnCreature) {
 			offsets::shakeCamera(getShakeMagnitude(wpnType, stopType, isPowerAtk), hitter->GetPosition(), getShakeTime(wpnType, stopType, isPowerAtk)); break;
 		}

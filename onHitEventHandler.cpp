@@ -68,38 +68,34 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 	//iff target is object
 	if (isObject(target)) {
 		//DEBUG("stop on object");
-		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::objectStop);
+		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::SOS_HITATTR::object);
 		return;
 	}
 
 
 	auto targetActor = target->As<RE::Actor>();
 	if (!isAlive(targetActor)) {
-		if (!settings::stopOnDead) {
-			//DEBUG("dead actor, no hit stop!");
-			return;
-		}
 		//DEBUG("stop on dead creature!");
-		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::creatureStop);
+		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::SOS_HITATTR::deadCreature);
 		return;
 	}
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
 		//DEBUG("stop on bash!");
-		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::bashStop);
+		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::SOS_HITATTR::bash);
 		return;
 	}
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kHitBlocked)) {
 		//DEBUG("stop on blocked attack!");
-		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::blockedStop);
+		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::SOS_HITATTR::blocked);
 		return;
 	}
 
 
 	//iff all above are checked, it can only be a living creature.
 	//DEBUG("stop on creature!");
-	hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::creatureStop);
+	hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::SOS_HITATTR::creature);
 }
 
 

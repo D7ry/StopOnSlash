@@ -14,20 +14,21 @@ public:
 		return  std::addressof(singleton);
 	}
 
-	enum STOPTYPE
+	enum SOS_HITATTR
 	{
-		objectStop = 0,
-		bashStop = 1,
-		blockedStop = 2,
-		creatureStop = 3
+		object = 0,
+		bash = 1,
+		blocked = 2,
+		creature = 3,
+		deadCreature = 4
 	};
 	
-	/*Initialize a hitstop.*/
-	void initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType);
+	/*Initialize a hitstop/screen shake*/
+	void initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, SOS_HITATTR stopType);
 
-	void stop(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType);
+	void stop(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType);
 
-	void shake(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType);
+	void shake(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType);
 
 
 
@@ -37,17 +38,17 @@ private:
 	void stopSGTM(float stopTime, float stopSpeed, RE::Actor* a_actor);
 	void stopVanilla(float stopTime, float stopSpeed, RE::Actor* a_actor);
 	void stopMCO(float stopTime, float stopSpeed, RE::Actor* a_actor);
-	void stopDistar(float stopTime, float stopSpeed, RE::Actor* a_actor);
+	void stopSkysaT(float stopTime, float stopSpeed, RE::Actor* a_actor);
 
-	inline float getStopSpeed(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
+	inline float getStopSpeed(RE::WEAPON_TYPE wpnType, SOS_HITATTR stopType, bool isPower) {
 		float stopSpeed;
 		using namespace settings::stopSpeed;
 		switch (stopType)
 		{
-		case STOPTYPE::bashStop: stopSpeed = bashStopSpeedPercent; break;
-		case STOPTYPE::blockedStop: stopSpeed = blockedStopSpeedPercent; break;
-		case STOPTYPE::creatureStop: stopSpeed = creatureStopSpeedPercent; break;
-		case STOPTYPE::objectStop: stopSpeed = objectStopSpeedPercent; break;
+		case SOS_HITATTR::bash: stopSpeed = bashStopSpeedPercent; break;
+		case SOS_HITATTR::blocked: stopSpeed = blockedStopSpeedPercent; break;
+		case SOS_HITATTR::creature: stopSpeed = creatureStopSpeedPercent; break;
+		case SOS_HITATTR::object: stopSpeed = objectStopSpeedPercent; break;
 		default: stopSpeed = 1;
 		}
 		switch (wpnType)
@@ -66,15 +67,15 @@ private:
 		return stopSpeed;
 	}
 
-	inline float getStopTime(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
+	inline float getStopTime(RE::WEAPON_TYPE wpnType, SOS_HITATTR stopType, bool isPower) {
 		float stopTime;
 		using namespace settings::stopTime;
 		switch (stopType)
 		{
-		case STOPTYPE::bashStop: stopTime = bashStopTime; break;
-		case STOPTYPE::blockedStop: stopTime = blockedStopTime; break;
-		case STOPTYPE::creatureStop: stopTime = creatureStopTime; break;
-		case STOPTYPE::objectStop: stopTime = objectStopTime; break;
+		case SOS_HITATTR::bash: stopTime = bashStopTime; break;
+		case SOS_HITATTR::blocked: stopTime = blockedStopTime; break;
+		case SOS_HITATTR::creature: stopTime = creatureStopTime; break;
+		case SOS_HITATTR::object: stopTime = objectStopTime; break;
 		default: stopTime = 1;
 		}
 		switch (wpnType)
@@ -93,15 +94,15 @@ private:
 		return stopTime;
 	}
 
-	inline float getShakeTime(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
+	inline float getShakeTime(RE::WEAPON_TYPE wpnType, SOS_HITATTR stopType, bool isPower) {
 		float shakeTime;
 		using namespace settings::shakeTime;
 		switch (stopType)
 		{
-		case STOPTYPE::bashStop: shakeTime = bashShakeTime; break;
-		case STOPTYPE::blockedStop: shakeTime = blockedShakeTime; break;
-		case STOPTYPE::creatureStop: shakeTime = creatureShakeTime; break;
-		case STOPTYPE::objectStop: shakeTime = objectShakeTime; break;
+		case SOS_HITATTR::bash: shakeTime = bashShakeTime; break;
+		case SOS_HITATTR::blocked: shakeTime = blockedShakeTime; break;
+		case SOS_HITATTR::creature: shakeTime = creatureShakeTime; break;
+		case SOS_HITATTR::object: shakeTime = objectShakeTime; break;
 		default: shakeTime = 0;
 		}
 		switch (wpnType)
@@ -120,14 +121,14 @@ private:
 		return shakeTime;
 	}
 
-	inline float getShakeMagnitude(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
+	inline float getShakeMagnitude(RE::WEAPON_TYPE wpnType, SOS_HITATTR stopType, bool isPower) {
 		float shakeMag;
 		using namespace settings::shakeMagnitude;
 		switch (stopType) {
-		case STOPTYPE::bashStop: shakeMag = bashShakeMagnitude; break;
-		case STOPTYPE::blockedStop: shakeMag = blockedShakeMagnitude; break;
-		case STOPTYPE::creatureStop: shakeMag = creatureShakeMagnitude; break;
-		case STOPTYPE::objectStop: shakeMag = objectShakeMagnitude; break;
+		case SOS_HITATTR::bash: shakeMag = bashShakeMagnitude; break;
+		case SOS_HITATTR::blocked: shakeMag = blockedShakeMagnitude; break;
+		case SOS_HITATTR::creature: shakeMag = creatureShakeMagnitude; break;
+		case SOS_HITATTR::object: shakeMag = objectShakeMagnitude; break;
 		default: shakeMag = 0;
 		}
 		switch (wpnType) {
