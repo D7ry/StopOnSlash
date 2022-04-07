@@ -38,9 +38,9 @@ inline void revertVanilla(float speedDiffL, float speedDiffR, RE::Actor* a_actor
 inline void revertSGTM() {
 	offsets::SGTM(1);
 }
-void hitStop::asyncRevertFunc(int stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor) {
+void hitStop::asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor) {
 	DEBUG("waiting for {}", stopTime * 1000);
-	std::this_thread::sleep_for(std::chrono::milliseconds(stopTime * 1000));
+	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(stopTime * 1000)));
 	switch (settings::currFramework) {
 	case dataHandler::combatFrameWork::MCO: revertMCO(speedDiffR, a_actor); break;
 	case dataHandler::combatFrameWork::Skysa2: revertDistar(speedDiffR, a_actor); break;
@@ -50,7 +50,7 @@ void hitStop::asyncRevertFunc(int stopTime, float speedDiffL, float speedDiffR, 
 	hitStop::GetSingleton()->hitStoppingActors.erase(a_actor);
 }
 
-void hitStop::stopVanilla(int stopTime, float stopSpeed, RE::Actor* a_actor) {
+void hitStop::stopVanilla(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("stop Vanilla!");
 	float speedDiffR = a_actor->GetActorValue(RE::ActorValue::kWeaponSpeedMult) - stopSpeed;
 	float speedDiffL = a_actor->GetActorValue(RE::ActorValue::kLeftWeaponSpeedMultiply) - stopSpeed;
@@ -60,7 +60,7 @@ void hitStop::stopVanilla(int stopTime, float stopSpeed, RE::Actor* a_actor) {
 	t.detach();
 }
 
-void hitStop::behaviorHS(int stopTime, float stopSpeed, RE::Actor* a_actor, RE::BSFixedString graphVariableFloat) {
+void hitStop::behaviorHS(float stopTime, float stopSpeed, RE::Actor* a_actor, RE::BSFixedString graphVariableFloat) {
 	float ogSpeed;
 	if (!a_actor->GetGraphVariableFloat(graphVariableFloat, ogSpeed)) {
 		INFO("Error: Failed to get graph variable float");
@@ -72,18 +72,18 @@ void hitStop::behaviorHS(int stopTime, float stopSpeed, RE::Actor* a_actor, RE::
 	t.detach();
 }
 
-void hitStop::stopMCO(int stopTime, float stopSpeed, RE::Actor* a_actor) {
+void hitStop::stopMCO(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("stop MCO!");
 	behaviorHS(stopTime, stopSpeed, a_actor, GVF_MCOSpeed);
 }
 
 /*Distar is a hippie*/
-void hitStop::stopDistar(int stopTime, float stopSpeed, RE::Actor* a_actor) {
+void hitStop::stopDistar(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 	behaviorHS(stopTime, stopSpeed, a_actor, GVF_SkysaSpeed);
 }
 
 
-void hitStop::stopSGTM(int stopTime, float stopSpeed, RE::Actor* a_actor) {
+void hitStop::stopSGTM(float stopTime, float stopSpeed, RE::Actor* a_actor) {
 	DEBUG("stop SGTM!");
 	if (a_actor->HasEffectWithArchetype(RE::MagicTarget::Archetype::kSlowTime)) {
 		return;
@@ -96,11 +96,46 @@ void hitStop::stopSGTM(int stopTime, float stopSpeed, RE::Actor* a_actor) {
 void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType) {
 	RE::WEAPON_TYPE wpnType = weapon->GetWeaponType();
 	if (!hitStoppingActors.contains(hitter)) {
-		stop(isPowerAtk, hitter, stopType, wpnType);
+		switch (stopType) {
+		case STOPTYPE::bashStop:
+			if (settings::stopOnBash) {
+				stop(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		case STOPTYPE::blockedStop:
+			if (settings::stopOnBlocked) {
+				stop(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		case STOPTYPE::creatureStop:
+			if (settings::stopOnCreature) {
+				stop(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		case STOPTYPE::objectStop:
+			if (settings::stopOnObject) {
+				stop(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		}
 		hitStoppingActors.insert(hitter);
 	}
 	if (hitter->IsPlayerRef() && settings::pcShake) {
-		shake(isPowerAtk, hitter, stopType, wpnType);
+		switch (stopType) {
+		case STOPTYPE::bashStop:
+			if (settings::shakeOnBash) {
+				shake(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		case STOPTYPE::blockedStop:
+			if (settings::shakeOnBlocked) {
+				shake(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		case STOPTYPE::creatureStop:
+			if (settings::shakeOnCreature) {
+				shake(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		case STOPTYPE::objectStop:
+			if (settings::shakeOnObject) {
+				shake(isPowerAtk, hitter, stopType, wpnType);
+			} break;
+		}
+		
 	}
 }
 void hitStop::stop(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType) {

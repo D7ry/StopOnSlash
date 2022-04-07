@@ -32,12 +32,12 @@ public:
 
 
 private:
-	static void asyncRevertFunc(int stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor);
-	inline void behaviorHS(int stopTime, float stopSpeed, RE::Actor* a_actor, RE::BSFixedString graphVariableFloat);
-	void stopSGTM(int stopTime, float stopSpeed, RE::Actor* a_actor);
-	void stopVanilla(int stopTime, float stopSpeed, RE::Actor* a_actor);
-	void stopMCO(int stopTime, float stopSpeed, RE::Actor* a_actor);
-	void stopDistar(int stopTime, float stopSpeed, RE::Actor* a_actor);
+	static void asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor);
+	inline void behaviorHS(float stopTime, float stopSpeed, RE::Actor* a_actor, RE::BSFixedString graphVariableFloat);
+	void stopSGTM(float stopTime, float stopSpeed, RE::Actor* a_actor);
+	void stopVanilla(float stopTime, float stopSpeed, RE::Actor* a_actor);
+	void stopMCO(float stopTime, float stopSpeed, RE::Actor* a_actor);
+	void stopDistar(float stopTime, float stopSpeed, RE::Actor* a_actor);
 
 	inline float getStopSpeed(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
 		float stopSpeed;

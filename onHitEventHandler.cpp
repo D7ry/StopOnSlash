@@ -67,21 +67,11 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 
 	//iff target is object
 	if (isObject(target)) {
-		if (!settings::stopOnObject) {
-			//DEBUG("object, no hit stop!");
-			return;
-		}
 		//DEBUG("stop on object");
 		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::objectStop);
 		return;
 	}
 
-
-	//target now has to be a creature.
-	if (!settings::stopOnCreature) {
-		//DEBUG("hit creature, no hitstop!");
-		return;
-	}
 
 	auto targetActor = target->As<RE::Actor>();
 	if (!isAlive(targetActor)) {
@@ -95,20 +85,12 @@ void onHitEventHandler::processMeleeHit(const RE::TESHitEvent* a_event, RE::Acto
 	}
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
-		if (!settings::stopOnBash) {
-			//DEBUG("bash hit, no hit stop!");
-			return;
-		}
 		//DEBUG("stop on bash!");
 		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::bashStop);
 		return;
 	}
 
 	if (a_event->flags.any(RE::TESHitEvent::Flag::kHitBlocked)) {
-		if (!settings::stopOnBlocked) {
-			//DEBUG("hit blocked, no hit stop!");
-			return;
-		}
 		//DEBUG("stop on blocked attack!");
 		hitStop::GetSingleton()->initStopAndShake(isPower, hitter, weapon, hitStop::STOPTYPE::blockedStop);
 		return;
