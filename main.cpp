@@ -67,7 +67,5 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	}
 	g_message->RegisterListener(loadGame::EventCallBACK);
 	Papyrus::Register();
-	SKSE::AllocTrampoline(1 << 5);
-	MainUpdateHook::InstallHook();
 	return true;
 }

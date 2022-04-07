@@ -161,9 +161,10 @@ void dataHandler::readSettings() {
 	INFO("frameworkInt set to {}", frameworkInt);
 	switch (frameworkInt) {
 	case 0: currFramework = combatFrameWork::Vanilla; DEBUG("using vanilla framework!"); break;
-	case 1: currFramework = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
-	case 2: currFramework = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
-	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
+	case 1: currFramework = combatFrameWork::Skysa2; DEBUG("using Skysa2 framework!"); break;
+	case 2: currFramework = combatFrameWork::MCO; DEBUG("using global time framework!"); break;
+	case 3: currFramework = combatFrameWork::SGTM; DEBUG("using global time framework!"); break;
+	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Vanilla framework."); break;
 	}
 	ReadBoolSetting(ini, "General", "bPChitStop", pcHitStop);
 	ReadBoolSetting(ini, "General", "bNPChitStop", npcHitStop);

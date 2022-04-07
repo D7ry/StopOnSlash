@@ -10,8 +10,9 @@ public:
 	{
 		//FIXME: fix MCM implentation
 		Vanilla = 0,
-		MCO = 1,
-		STGM = 2
+		Skysa2 = 1,
+		SGTM = 2,
+		MCO = 3
 	};
 
 

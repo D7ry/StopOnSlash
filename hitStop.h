@@ -1,50 +1,19 @@
 #pragma once
 #include "dataHandler.h"
-#include <boost/unordered_map.hpp>
-#include <boost/container/set.hpp>
-namespace Utils
-{
-	static float* g_deltaTime = (float*)REL::ID(523660).address();                            // 2F6B948
-	static float* g_deltaTimeRealTime = (float*)REL::ID(523661).address();                  // 2F6B94C
-}
-
-
+#include "lib/robin_hood.h"
 
 class hitStop
 {
 public:
 
-
-	/*Mapping of all actors in hitstop to the remaining time of their hitstop.*/
-	boost::unordered_map<RE::Actor*, float> actorsInHitstop;
-	/*Mapping of all actors and their left/right hand speed before hitstop.*/
-	boost::unordered_map<RE::Actor*, std::pair<float, float>> ogSpeedMap;
-
+	robin_hood::unordered_set <RE::Actor*> hitStoppingActors;
+	
 	static hitStop* GetSingleton()
 	{
 		static hitStop singleton;
 		return  std::addressof(singleton);
 	}
 
-	void update() {
-		auto it = actorsInHitstop.begin();
-		while (it != actorsInHitstop.end()) {
-			auto actor = it->first;
-			if (!actor || it->second <= 0) {
-				DEBUG("{}'s hitstop ended", actor->GetName());
-				it = actorsInHitstop.erase(it);
-				switch (settings::currFramework) {
-				case dataHandler::combatFrameWork::Vanilla: revertVanilla(actor); break;
-				case dataHandler::combatFrameWork::STGM: revertSGTM(); break;
-				case dataHandler::combatFrameWork::MCO:	revertMCO(actor); break;
-				}
-				continue;
-			}
-			it->second -= *Utils::g_deltaTimeRealTime;
-			++it;
-		}
-
-	}
 	enum STOPTYPE
 	{
 		objectStop = 0,
@@ -52,23 +21,23 @@ public:
 		blockedStop = 2,
 		creatureStop = 3
 	};
+	
+	/*Initialize a hitstop.*/
+	void initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType);
 
-	void calculateStop(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType);
+	void stop(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType);
 
-	void calculateShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType);
+	void shake(bool isPowerAtk, RE::Actor* hitter, STOPTYPE stopType, RE::WEAPON_TYPE wpnType);
 
-	inline void stop(float stopTime, float stopSpeed, RE::Actor* a_actor);
 
 
 private:
-
+	static void asyncRevertFunc(int stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor);
+	inline void behaviorHS(int stopTime, float stopSpeed, RE::Actor* a_actor, RE::BSFixedString graphVariableFloat);
 	void stopSGTM(int stopTime, float stopSpeed, RE::Actor* a_actor);
 	void stopVanilla(int stopTime, float stopSpeed, RE::Actor* a_actor);
 	void stopMCO(int stopTime, float stopSpeed, RE::Actor* a_actor);
-
-	void revertSGTM();
-	void revertVanilla(RE::Actor* a_actor);
-	void revertMCO(RE::Actor* a_actor);
+	void stopDistar(int stopTime, float stopSpeed, RE::Actor* a_actor);
 
 	inline float getStopSpeed(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
 		float stopSpeed;
@@ -178,24 +147,3 @@ private:
 
 };
 	
-
-class MainUpdateHook
-{
-public:
-	static void InstallHook()
-	{
-		auto& trampoline = SKSE::GetTrampoline();
-
-		REL::Relocation<uintptr_t> hook{ REL::ID(35551) };  // 5AF3D0, main loop
-
-		_Update = trampoline.write_call<5>(hook.address() + 0x11F, Update);
-	}
-
-private:
-	static void Update(RE::Main* a_this, float a2) {
-		hitStop::GetSingleton()->update();
-		_Update(a_this, a2);
-	}
-	static inline REL::Relocation<decltype(Update)> _Update;
-
-};
