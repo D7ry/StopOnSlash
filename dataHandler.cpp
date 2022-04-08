@@ -47,6 +47,7 @@ namespace settings {
 
 	bool pcHitStop = true;
 
+	bool SGTMStop = false;
 
 	bool npcHitStop = true;
 
@@ -112,38 +113,38 @@ namespace settings {
 
 	namespace shakeTime
 	{
-		extern float objectShakeTime = 0.3;
-		extern float bashShakeTime = 0.3;
-		extern float blockedShakeTime = 0.3;
-		extern float creatureShakeTime = 0.3;
+		float objectShakeTime = 0.3;
+		float bashShakeTime = 0.3;
+		float blockedShakeTime = 0.3;
+		float creatureShakeTime = 0.3;
 
-		extern float ShakeTimePowerMult = 1;
+		float ShakeTimePowerMult = 1;
 
-		extern float ShakeTimeHandToHandMult = 1;
-		extern float ShakeTimeDaggerMult = 1;
-		extern float ShakeTimeSwordMult = 1;
-		extern float ShakeTimeGreatSwordMult = 1;
-		extern float ShakeTimeAxeMult = 1;
-		extern float ShakeTimeMaceMult = 1;
-		extern float ShakeTime2hwMult = 1;
+		float ShakeTimeHandToHandMult = 1;
+		float ShakeTimeDaggerMult = 1;
+		float ShakeTimeSwordMult = 1;
+		float ShakeTimeGreatSwordMult = 1;
+		float ShakeTimeAxeMult = 1;
+		float ShakeTimeMaceMult = 1;
+		float ShakeTime2hwMult = 1;
 	}
 
 	namespace shakeMagnitude
 	{
-		extern float objectShakeMagnitude = 0.3;
-		extern float bashShakeMagnitude = 0.3;
-		extern float blockedShakeMagnitude = 0.3;
-		extern float creatureShakeMagnitude = 0.3;
+		float objectShakeMagnitude = 0.3;
+		float bashShakeMagnitude = 0.3;
+		float blockedShakeMagnitude = 0.3;
+		float creatureShakeMagnitude = 0.3;
 
-		extern float ShakeMagnitudePowerMult = 1;
+		float ShakeMagnitudePowerMult = 1;
 
-		extern float ShakeMagnitudeHandToHandMult = 1;
-		extern float ShakeMagnitudeDaggerMult = 1;
-		extern float ShakeMagnitudeSwordMult = 1;
-		extern float ShakeMagnitudeGreatSwordMult = 1;
-		extern float ShakeMagnitudeAxeMult = 1;
-		extern float ShakeMagnitudeMaceMult = 1;
-		extern float ShakeMagnitude2hwMult = 1;
+		float ShakeMagnitudeHandToHandMult = 1;
+		float ShakeMagnitudeDaggerMult = 1;
+		float ShakeMagnitudeSwordMult = 1;
+		float ShakeMagnitudeGreatSwordMult = 1;
+		float ShakeMagnitudeAxeMult = 1;
+		float ShakeMagnitudeMaceMult = 1;
+		float ShakeMagnitude2hwMult = 1;
 	}
 }
 
@@ -154,18 +155,18 @@ void dataHandler::readSettings() {
 #define SETTINGFILE_PATH "Data\\MCM\\Settings\\StopOnSlash.ini"
 	ini.LoadFile(SETTINGFILE_PATH);
 
-	int frameworkInt;
-	ReadIntSetting(ini, "General", "iFrameWork", frameworkInt);
+	//int frameworkInt;
+	//ReadIntSetting(ini, "General", "iFrameWork", frameworkInt);
 
 	using namespace settings;
-	INFO("frameworkInt set to {}", frameworkInt);
-	switch (frameworkInt) {
+	//INFO("frameworkInt set to {}", frameworkInt);
+	/*switch (frameworkInt) {
 	case 0: currFramework = combatFrameWork::Vanilla; DEBUG("using vanilla framework!"); break;
 	case 1: currFramework = combatFrameWork::Skysa2; DEBUG("using Skysa2 framework!"); break;
 	case 2: currFramework = combatFrameWork::MCO; DEBUG("using global time framework!"); break;
 	case 3: currFramework = combatFrameWork::SGTM; DEBUG("using global time framework!"); break;
 	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Vanilla framework."); break;
-	}
+	}*/
 	ReadBoolSetting(ini, "General", "bPChitStop", pcHitStop);
 	ReadBoolSetting(ini, "General", "bNPChitStop", npcHitStop);
 	ReadBoolSetting(ini, "General", "bStopOnCreature", stopOnCreature);
@@ -247,3 +248,53 @@ void dataHandler::readSettings() {
 	ReadFloatSetting(ini, "Multiplier", "fShakeTime2hwMult", ShakeTime2hwMult);
 }
 
+void dataHandler::initGlobals() {
+	INFO("Initilize global settings...");
+	auto dataHandler = RE::TESDataHandler::GetSingleton();
+	if (dataHandler) {
+#define LOOKGLOBAL dataHandler->LookupForm<RE::TESGlobal>
+		globals::glob_Nemesis_SkysaT = LOOKGLOBAL(0x803, "StopOnSlash.esp");
+		globals::glob_Nemesis_MCO = LOOKGLOBAL(0x804, "StopOnSlash.esp");
+		globals::glob_Nemesis_Vanilla = LOOKGLOBAL(0x805, "StopOnSlash.esp");
+	}
+	INFO("...done");
+}
+
+void dataHandler::updateGlobals() {
+	INFO("Update global settings...");
+
+	auto pc = RE::PlayerCharacter::GetSingleton();
+	if (pc) {
+		float bDummy1;
+		bool SkysaT = false;
+		SkysaT = pc->GetGraphVariableFloat("SkySA_weaponSpeedMult", bDummy1);
+
+		float bDummy2;
+		bool MCO = false;
+		MCO = pc->GetGraphVariableFloat("MCO_AttackSpeed", bDummy2);
+		if (SkysaT) {
+			globals::glob_Nemesis_SkysaT->value = true;
+			globals::glob_Nemesis_MCO->value = false;
+			globals::glob_Nemesis_Vanilla->value = false;
+			settings::currFramework = dataHandler::combatFrameWork::Skysa2;
+		} else if (MCO) {
+			globals::glob_Nemesis_MCO->value = true;
+			globals::glob_Nemesis_SkysaT->value = false;
+			globals::glob_Nemesis_Vanilla->value = false;
+			settings::currFramework = dataHandler::combatFrameWork::MCO;
+		}
+		else {
+			globals::glob_Nemesis_MCO->value = false;
+			globals::glob_Nemesis_SkysaT->value = false;
+			globals::glob_Nemesis_Vanilla->value = true;
+			settings::currFramework = dataHandler::combatFrameWork::Vanilla;
+		}
+
+		if (settings::SGTMStop) {
+			settings::currFramework = dataHandler::combatFrameWork::SGTM;
+		}
+			
+	}
+	INFO("...done");
+
+}

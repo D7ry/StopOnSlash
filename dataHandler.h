@@ -17,8 +17,8 @@ public:
 
 
 	static void readSettings();
-
-
+	static void initGlobals();
+	static void updateGlobals();
 
 private:
 	static void ReadBoolSetting(CSimpleIniA& a_ini, const char* a_sectionName, const char* a_settingName, bool& a_setting);
@@ -26,10 +26,17 @@ private:
 	static void ReadFloatSetting(CSimpleIniA& a_ini, const char* a_sectionName, const char* a_settingName, float& a_setting);
 };
 
+class globals {
+public:
 
+	static inline RE::TESGlobal* glob_Nemesis_MCO;
+	static inline RE::TESGlobal* glob_Nemesis_SkysaT;
+	static inline RE::TESGlobal* glob_Nemesis_Vanilla;
+};
 namespace settings
 {
 	extern dataHandler::combatFrameWork currFramework;
+	extern bool SGTMStop;
 
 	extern int activeThreadCt;
 

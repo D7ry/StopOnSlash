@@ -9,7 +9,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 
 	data.PluginVersion(Version::MAJOR);
 	data.PluginName(Version::NAME);
-	data.AuthorName("Dropkicker"sv);
+	data.AuthorName("dTRY"sv);
 
 	data.CompatibleVersions({ SKSE::RUNTIME_LATEST });
 	data.UsesAddressLibrary(true);

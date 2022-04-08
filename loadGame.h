@@ -8,12 +8,20 @@ public:
 
 	static void EventCallBACK(SKSE::MessagingInterface::Message* msg)
 	{
-		if (msg->type == SKSE::MessagingInterface::kDataLoaded) {
-			INFO("data loaded, initializing...");
+		switch (msg->type) {
+		case SKSE::MessagingInterface::kDataLoaded:
+			INFO("data loaded, read settings...");
 			onHitEventHandler::Register();
 			dataHandler::readSettings();
-			INFO("initialization complete!");
+			dataHandler::initGlobals();
+			INFO("...done.");
+			break;
+		case SKSE::MessagingInterface::kPostLoadGame:
+			INFO("Post load; update globals...");
+			dataHandler::updateGlobals();
+			INFO("...done.");
 		}
+
 	}
 
 };
