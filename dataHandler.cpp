@@ -63,6 +63,8 @@ namespace settings {
 
 
 	bool pcShake = true;
+	bool pcFOV = true;
+
 	bool shakeOnLight = false;
 
 	bool shakeOnCreature = true;

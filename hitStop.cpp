@@ -58,7 +58,7 @@ inline void revertSGTM() {
 @param speedDiffR: right hand speed difference between current speed and original speed.
 @param a_actor: actor whose attack speed will be reverted.*/
 void hitStop::asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor) {
-	DEBUG("waiting for {}", stopTime * 1000);
+	//DEBUG("waiting for {}", stopTime * 1000);
 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(stopTime * 1000)));
 	switch (settings::currFramework) {
 	case dataHandler::combatFrameWork::MCO: revertMCO(speedDiffR, a_actor); break;
@@ -67,6 +67,31 @@ void hitStop::asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR
 	case dataHandler::combatFrameWork::SGTM: revertSGTM(); break;
 	}
 	hitStop::GetSingleton()->hitStoppingActors.erase(a_actor);
+}
+
+/*An async fov func.
+@param time: total time for the FOV change.
+@param FOVStep: change in FOV each tick.*/
+void hitStop::asyncFOVFunc(float time, float FOVStep) {
+	auto cam = RE::PlayerCamera::GetSingleton();
+	float half = time / 2;
+
+	while (time > half) {
+		INFO(time);
+		cam->worldFOV -= FOVStep;
+		cam->firstPersonFOV -= FOVStep;
+		std::this_thread::sleep_for(std::chrono::milliseconds(17));
+		time -= 0.017;
+	}
+	while (time > 0) {
+		INFO(time);
+		cam->worldFOV += FOVStep;
+		cam->firstPersonFOV += FOVStep;
+		std::this_thread::sleep_for(std::chrono::milliseconds(17));
+		time -= 0.017;
+	}
+	
+
 }
 
 void hitStop::stopVanilla(float stopTime, float stopSpeed, RE::Actor* a_actor) {
@@ -139,30 +164,34 @@ void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObject
 		}
 		hitStoppingActors.insert(hitter);
 	}
-	if (hitter->IsPlayerRef() && settings::pcShake) {
-		switch (stopType) {
-		case SOS_HITATTR::bash:
-			if (settings::shakeOnBash) {
-				shake(isPowerAtk, hitter, stopType, wpnType);
-			} break;
-		case SOS_HITATTR::blocked:
-			if (settings::shakeOnBlocked) {
-				shake(isPowerAtk, hitter, stopType, wpnType);
-			} break;
-		case SOS_HITATTR::creature:
-			if (settings::shakeOnCreature) {
-				shake(isPowerAtk, hitter, stopType, wpnType);
-			} break;
-		case SOS_HITATTR::deadCreature:
-			if (settings::shakeOnDead) {
-				stop(isPowerAtk, hitter, SOS_HITATTR::creature, wpnType);
+	if (hitter->IsPlayerRef()) {
+		if (settings::pcShake) {
+			switch (stopType) {
+			case SOS_HITATTR::bash:
+				if (settings::shakeOnBash) {
+					shake(isPowerAtk, hitter, stopType, wpnType);
+				} break;
+			case SOS_HITATTR::blocked:
+				if (settings::shakeOnBlocked) {
+					shake(isPowerAtk, hitter, stopType, wpnType);
+				} break;
+			case SOS_HITATTR::creature:
+				if (settings::shakeOnCreature) {
+					shake(isPowerAtk, hitter, stopType, wpnType);
+				} break;
+			case SOS_HITATTR::deadCreature:
+				if (settings::shakeOnDead) {
+					stop(isPowerAtk, hitter, SOS_HITATTR::creature, wpnType);
+				}
+			case SOS_HITATTR::object:
+				if (settings::shakeOnObject) {
+					shake(isPowerAtk, hitter, stopType, wpnType);
+				} break;
 			}
-		case SOS_HITATTR::object:
-			if (settings::shakeOnObject) {
-				shake(isPowerAtk, hitter, stopType, wpnType);
-			} break;
 		}
-		
+		/*if (settings::pcFOV) {
+			FOV(isPowerAtk, hitter, stopType, wpnType);
+		}*/
 	}
 }
 void hitStop::stop(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType) {
@@ -211,3 +240,7 @@ void hitStop::shake(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE
 }
 
 
+void hitStop::FOV(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType) {
+	std::jthread t(asyncFOVFunc, 0.1, 3);
+	t.detach();
+}

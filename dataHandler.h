@@ -56,6 +56,8 @@ namespace settings
 	extern bool stopOnBlocked;
 
 	extern bool pcShake;
+	extern bool pcFOV;
+
 	extern bool shakeOnLight;
 
 	extern bool shakeOnCreature;

@@ -30,10 +30,11 @@ public:
 
 	void shake(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType);
 
-
+	void FOV(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType);
 
 private:
 	static void asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor);
+	static void asyncFOVFunc(float time, float magnitude);
 	inline void behaviorHS(float stopTime, float stopSpeed, RE::Actor* a_actor, RE::BSFixedString graphVariableFloat);
 	void stopSGTM(float stopTime, float stopSpeed, RE::Actor* a_actor);
 	void stopVanilla(float stopTime, float stopSpeed, RE::Actor* a_actor);
