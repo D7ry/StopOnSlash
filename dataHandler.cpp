@@ -169,6 +169,13 @@ void dataHandler::readSettings() {
 	case 3: currFramework = combatFrameWork::SGTM; DEBUG("using global time framework!"); break;
 	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Vanilla framework."); break;
 	}*/
+	ReadBoolSetting(ini, "General", "bSGTMStop", SGTMStop);
+	if (SGTMStop) {
+		currFramework = combatFrameWork::SGTM;
+	}
+	else {
+		updateGlobals();
+	}
 	ReadBoolSetting(ini, "General", "bPChitStop", pcHitStop);
 	ReadBoolSetting(ini, "General", "bNPChitStop", npcHitStop);
 	ReadBoolSetting(ini, "General", "bStopOnCreature", stopOnCreature);
@@ -267,25 +274,29 @@ void dataHandler::updateGlobals() {
 
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
-		float bDummy1;
+		INFO("Locating current framework...");
+		float bDummy;
 		bool SkysaT = false;
-		SkysaT = pc->GetGraphVariableFloat("SkySA_weaponSpeedMult", bDummy1);
+		SkysaT = pc->GetGraphVariableFloat("SkySA_weaponSpeedMult", bDummy);
 
-		float bDummy2;
 		bool MCO = false;
-		MCO = pc->GetGraphVariableFloat("MCO_AttackSpeed", bDummy2);
+		MCO = pc->GetGraphVariableFloat("MCO_AttackSpeed", bDummy);
 		if (SkysaT) {
+			INFO("Skysa 2.0");
 			globals::glob_Nemesis_SkysaT->value = true;
 			globals::glob_Nemesis_MCO->value = false;
 			globals::glob_Nemesis_Vanilla->value = false;
 			settings::currFramework = dataHandler::combatFrameWork::Skysa2;
+			
 		} else if (MCO) {
+			INFO("MCO");
 			globals::glob_Nemesis_MCO->value = true;
 			globals::glob_Nemesis_SkysaT->value = false;
 			globals::glob_Nemesis_Vanilla->value = false;
 			settings::currFramework = dataHandler::combatFrameWork::MCO;
 		}
 		else {
+			INFO("Vanilla");
 			globals::glob_Nemesis_MCO->value = false;
 			globals::glob_Nemesis_SkysaT->value = false;
 			globals::glob_Nemesis_Vanilla->value = true;

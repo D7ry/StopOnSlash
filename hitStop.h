@@ -32,6 +32,7 @@ public:
 
 	void FOV(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType);
 
+	bool asyncFOV;
 private:
 	static void asyncRevertFunc(float stopTime, float speedDiffL, float speedDiffR, RE::Actor* a_actor);
 	static void asyncFOVFunc(float time, float magnitude);

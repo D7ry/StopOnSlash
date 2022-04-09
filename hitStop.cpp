@@ -90,6 +90,8 @@ void hitStop::asyncFOVFunc(float time, float FOVStep) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(17));
 		time -= 0.017;
 	}
+
+	//hitStop::GetSingleton()->asyncFOV = false;
 	
 
 }
@@ -189,7 +191,8 @@ void hitStop::initStopAndShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObject
 				} break;
 			}
 		}
-		/*if (settings::pcFOV) {
+		/*if (settings::pcFOV
+			&& !asyncFOV) {
 			FOV(isPowerAtk, hitter, stopType, wpnType);
 		}*/
 	}
@@ -241,6 +244,7 @@ void hitStop::shake(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE
 
 
 void hitStop::FOV(bool isPowerAtk, RE::Actor* hitter, SOS_HITATTR stopType, RE::WEAPON_TYPE wpnType) {
-	std::jthread t(asyncFOVFunc, 0.1, 3);
+	std::jthread t(asyncFOVFunc, 0.3, 0.7);
 	t.detach();
+	asyncFOV = true;
 }
