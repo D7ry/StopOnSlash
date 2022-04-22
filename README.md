@@ -5,4 +5,4 @@ Requirements:<br/>
 SKSE 1.5.97 http://skse.silverlock.org/ <br/>
 Skyrim Special Edition
 
-https://www.nexusmods.com/skyrimspecialedition/mods/61184
+https://www.nexusmods.com/skyrimspecialedition/mods/66155
