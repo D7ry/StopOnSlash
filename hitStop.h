@@ -1,24 +1,82 @@
 #pragma once
 #include "dataHandler.h"
-#include <boost/unordered_map.hpp>
-#include <boost/container/set.hpp>
 namespace Utils
 {
-	static float* g_deltaTime = (float*)REL::ID(523660).address();                            // 2F6B948
-	static float* g_deltaTimeRealTime = (float*)REL::ID(523661).address();                  // 2F6B94C
+	inline static float* g_deltaTime = (float*)RELOCATION_ID(523660, 410199).address();  // 2F6B948
+	inline static float* g_deltaTimeRealTime = (float*)RELOCATION_ID(523661, 410200).address();  // 2F6B94C
 }
 
+class AnimSpeedManager
+{
+	class on_updateAnimation_internal;
+	class on_updateAnimation_player;
 
+public:
+	static void setAnimSpeed(RE::ActorHandle a_actorHandle, float a_speedMult, float a_dur);
+	static void revertAnimSpeed(RE::ActorHandle a_actorHandle);
+	static void revertAllAnimSpeed();
+
+	static void init()
+	{
+		on_updateAnimation_internal::install();
+		on_updateAnimation_player::install();
+	}
+
+private:
+	struct AnimSpeedData
+	{
+		float speedMult;
+		float dur;
+	};
+	static inline std::unordered_map<RE::ActorHandle, AnimSpeedData> _animSpeeds = {};
+	static inline std::mutex _animSpeedsLock = std::mutex();
+
+	static void update(RE::ActorHandle a_actorHandle, float& a_deltaTime);
+
+	class on_updateAnimation_player
+	{
+	public:
+		static void install()
+		{
+			auto& trampoline = SKSE::GetTrampoline();
+			REL::Relocation<std::uintptr_t> PlayerCharacterVtbl{ RE::VTABLE_PlayerCharacter[0] };
+			_PlayerCharacter_UpdateAnimation = PlayerCharacterVtbl.write_vfunc(0x7D, PlayerCharacter_UpdateAnimation);
+			logger::info("hook:on_updateAnimation_player");
+		}
+
+	private:
+		static void PlayerCharacter_UpdateAnimation(RE::PlayerCharacter* a_this, float a_deltaTime)
+		{
+			AnimSpeedManager::update(a_this->GetHandle(), a_deltaTime);
+			_PlayerCharacter_UpdateAnimation(a_this, a_deltaTime);
+		}
+		static inline REL::Relocation<decltype(PlayerCharacter_UpdateAnimation)> _PlayerCharacter_UpdateAnimation;
+	};
+
+	class on_updateAnimation_internal
+	{
+	public:
+		static void install()
+		{
+			auto& trampoline = SKSE::GetTrampoline();
+			REL::Relocation<uintptr_t> hook{ RELOCATION_ID(40436, 41453) };                                                                // 6E1990, 70A840, RunOneActorAnimationUpdateJob
+			_UpdateAnimationInternal = trampoline.write_call<5>(hook.address() + RELOCATION_OFFSET(0x74, 0x74), UpdateAnimationInternal);  // 6E1A04, 70A8B4;
+			logger::info("hook:on_updateAnimation_internal");
+		}
+
+	private:
+		static void UpdateAnimationInternal(RE::Actor* a_this, float a_deltaTime)
+		{
+			AnimSpeedManager::update(a_this->GetHandle(), a_deltaTime);
+			_UpdateAnimationInternal(a_this, a_deltaTime);
+		}
+		static inline REL::Relocation<decltype(UpdateAnimationInternal)> _UpdateAnimationInternal;
+	};
+};
 
 class hitStop
 {
 public:
-
-
-	/*Mapping of all actors in hitstop to the remaining time of their hitstop.*/
-	boost::unordered_map<RE::Actor*, float> actorsInHitstop;
-	/*Mapping of all actors and their left/right hand speed before hitstop.*/
-	boost::unordered_map<RE::Actor*, std::pair<float, float>> ogSpeedMap;
 
 	static hitStop* GetSingleton()
 	{
@@ -26,25 +84,9 @@ public:
 		return  std::addressof(singleton);
 	}
 
-	void update() {
-		auto it = actorsInHitstop.begin();
-		while (it != actorsInHitstop.end()) {
-			auto actor = it->first;
-			if (!actor || it->second <= 0) {
-				DEBUG("{}'s hitstop ended", actor->GetName());
-				it = actorsInHitstop.erase(it);
-				switch (settings::currFramework) {
-				case dataHandler::combatFrameWork::Vanilla: revertVanilla(actor); break;
-				case dataHandler::combatFrameWork::STGM: revertSGTM(); break;
-				case dataHandler::combatFrameWork::MCO:	revertMCO(actor); break;
-				}
-				continue;
-			}
-			it->second -= *Utils::g_deltaTimeRealTime;
-			++it;
-		}
+	void update();
 
-	}
+
 	enum STOPTYPE
 	{
 		objectStop = 0,
@@ -55,20 +97,17 @@ public:
 
 	void calculateStop(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType);
 
-	void calculateShake(bool isPowerAtk, RE::Actor* hitter, RE::TESObjectWEAP* weapon, STOPTYPE stopType);
 
 	inline void stop(float stopTime, float stopSpeed, RE::Actor* a_actor);
 
 
 private:
-
-	void stopSGTM(int stopTime, float stopSpeed, RE::Actor* a_actor);
-	void stopVanilla(int stopTime, float stopSpeed, RE::Actor* a_actor);
-	void stopMCO(int stopTime, float stopSpeed, RE::Actor* a_actor);
+	
+	float stopSGTM_time;
+	bool stopSGTM_ongoing;
+	void stopSGTM(float stopTime, float stopSpeed, RE::Actor* a_actor);
 
 	void revertSGTM();
-	void revertVanilla(RE::Actor* a_actor);
-	void revertMCO(RE::Actor* a_actor);
 
 	inline float getStopSpeed(RE::WEAPON_TYPE wpnType, STOPTYPE stopType, bool isPower) {
 		float stopSpeed;
@@ -185,17 +224,16 @@ public:
 	static void InstallHook()
 	{
 		auto& trampoline = SKSE::GetTrampoline();
+		REL::Relocation<uintptr_t> hook{ RELOCATION_ID(35565, 36564) };  // 5B2FF0, 5D9F50, main update
 
-		REL::Relocation<uintptr_t> hook{ REL::ID(35551) };  // 5AF3D0, main loop
-
-		_Update = trampoline.write_call<5>(hook.address() + 0x11F, Update);
+		_Nullsub = trampoline.write_call<5>(hook.address() + RELOCATION_OFFSET(0x748, 0xC26), Nullsub);  // 5B3738, 5DAB76
 	}
 
 private:
-	static void Update(RE::Main* a_this, float a2) {
+	static void Nullsub() {
 		hitStop::GetSingleton()->update();
-		_Update(a_this, a2);
+		_Nullsub();
 	}
-	static inline REL::Relocation<decltype(Update)> _Update;
+	static inline REL::Relocation<decltype(Nullsub)> _Nullsub;	
 
 };

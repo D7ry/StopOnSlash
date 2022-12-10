@@ -19,7 +19,7 @@ public:
 
 		ScriptEventSource->AddEventSink(&singleton);
 
-		INFO("Register {}.", typeid(singleton).name());
+		logger::info("Register {}.", typeid(singleton).name());
 
 		return true;
 	}
@@ -35,19 +35,13 @@ private:
 
 	inline bool isObject(RE::TESObjectREFR* a_obj) {
 		if (a_obj->formType == RE::FormType::ActorCharacter) {
-			DEBUG("Target is actor!");
 			return false;
 		}
 		return true;
 	}
 
 
-	inline bool isAlive(RE::Actor* a_target) {				//stolen from Maxsu's OHAF
-
-		if (a_target->IsDead()) {
-			DEBUG("Target Actor is Dead!");
-			return false;
-		}
-		return true;
+	inline bool isAlive(RE::Actor* a_target) {
+		return !a_target->IsDead();
 	}
 };

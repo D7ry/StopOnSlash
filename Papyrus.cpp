@@ -13,8 +13,6 @@ namespace Papyrus
 	bool StopOnSlash_MCM::Register(RE::BSScript::IVirtualMachine* a_vm)
 	{
 		a_vm->RegisterFunction("OnConfigClose", "StopOnSlash_MCM", OnConfigClose);
-
-		INFO("Registered SOS MCM class");
 		return true;
 	}
 
@@ -22,6 +20,5 @@ namespace Papyrus
 	{
 		auto papyrus = SKSE::GetPapyrusInterface();
 		papyrus->Register(StopOnSlash_MCM::Register);
-		INFO("Registered papyrus functions");
 	}
 }

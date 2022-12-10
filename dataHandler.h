@@ -6,12 +6,11 @@
 class dataHandler
 {
 public:
-	enum combatFrameWork
+	enum stopMethod
 	{
 		//FIXME: fix MCM implentation
-		Vanilla = 0,
-		MCO = 1,
-		STGM = 2
+		AnimSpeed = 0,
+		SGTM = 1
 	};
 
 
@@ -28,7 +27,7 @@ private:
 
 namespace settings
 {
-	extern dataHandler::combatFrameWork currFramework;
+	extern dataHandler::stopMethod currFramework;
 
 	extern int activeThreadCt;
 

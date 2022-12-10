@@ -7,11 +7,11 @@ void dataHandler::ReadBoolSetting(CSimpleIniA& a_ini, const char* a_sectionName,
 	bFound = a_ini.GetValue(a_sectionName, a_settingName);
 	if (bFound)
 	{
-		INFO("found {} with value {}", a_settingName, bFound);
+		logger::info("found {} with value {}", a_settingName, bFound);
 		a_setting = a_ini.GetBoolValue(a_sectionName, a_settingName);
 	}
 	else {
-		INFO("failed to find {} from {}", a_settingName, a_sectionName);
+		logger::info("failed to find {} from {}", a_settingName, a_sectionName);
 	}
 }
 
@@ -20,11 +20,11 @@ void dataHandler::ReadIntSetting(CSimpleIniA& a_ini, const char* a_sectionName, 
 	const char* bFound = nullptr;
 	bFound = a_ini.GetValue(a_sectionName, a_settingName);
 	if (bFound) {
-		INFO("found {} with value {}", a_settingName, bFound);
+		logger::info("found {} with value {}", a_settingName, bFound);
 		a_setting = static_cast<int>(a_ini.GetDoubleValue(a_sectionName, a_settingName));
 	}
 	else {
-		INFO("failed to find {} from {}", a_settingName, a_sectionName);
+		logger::info("failed to find {} from {}", a_settingName, a_sectionName);
 	}
 }
 
@@ -33,17 +33,17 @@ void dataHandler::ReadFloatSetting(CSimpleIniA& a_ini, const char* a_sectionName
 	const char* bFound = nullptr;
 	bFound = a_ini.GetValue(a_sectionName, a_settingName);
 	if (bFound) {
-		INFO("found {} with value {}", a_settingName, bFound);
+		logger::info("found {} with value {}", a_settingName, bFound);
 		a_setting = static_cast<float>(a_ini.GetDoubleValue(a_sectionName, a_settingName));
 	}
 	else {
-		INFO("failed to find {} from {}", a_settingName, a_sectionName);
+		logger::info("failed to find {} from {}", a_settingName, a_sectionName);
 	}
 }
 #pragma endregion
 
 namespace settings {
-	dataHandler::combatFrameWork currFramework = dataHandler::combatFrameWork::Vanilla;
+	dataHandler::stopMethod currFramework = dataHandler::stopMethod::AnimSpeed;
 
 	bool pcHitStop = true;
 
@@ -149,7 +149,7 @@ namespace settings {
 
 
 void dataHandler::readSettings() {
-	DEBUG("getting settings!");
+	logger::info("getting settings!");
 	CSimpleIniA ini;
 #define SETTINGFILE_PATH "Data\\MCM\\Settings\\StopOnSlash.ini"
 	ini.LoadFile(SETTINGFILE_PATH);
@@ -158,12 +158,20 @@ void dataHandler::readSettings() {
 	ReadIntSetting(ini, "General", "iFrameWork", frameworkInt);
 
 	using namespace settings;
-	INFO("frameworkInt set to {}", frameworkInt);
+	logger::info("frameworkInt set to {}", frameworkInt);
 	switch (frameworkInt) {
-	case 0: currFramework = combatFrameWork::Vanilla; DEBUG("using vanilla framework!"); break;
-	case 1: currFramework = combatFrameWork::MCO; DEBUG("using MCO framework!"); break;
-	case 2: currFramework = combatFrameWork::STGM; DEBUG("using global time framework!"); break;
-	default: currFramework = combatFrameWork::Vanilla; DEBUG("invalid framework setting. Using Skysa framework."); break;
+	case 0:
+		currFramework = stopMethod::AnimSpeed;
+		logger::info("using vanilla framework!");
+		break;
+	case 1:
+		currFramework = stopMethod::SGTM;
+		logger::info("using MCO framework!");
+		break;
+	default:
+		currFramework = stopMethod::AnimSpeed;
+		logger::info("invalid framework setting. Using animspeed method.");
+		break;
 	}
 	ReadBoolSetting(ini, "General", "bPChitStop", pcHitStop);
 	ReadBoolSetting(ini, "General", "bNPChitStop", npcHitStop);
